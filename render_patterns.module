@@ -1,0 +1,88 @@
+<?php
+/**
+ * @file
+ * Base file for the render_patterns module.
+ *
+ * @defgroup render_patterns Render Patterns
+ * @{
+ */
+
+/**
+ * Future-proof factory function returns Pattern object.
+ *
+ * In future versions, when namespacing is supported, this function will handle
+ * the namespacing for you.  This provides a consisten api for this module to
+ * simply use the eventual classname.
+ *
+ * In Drupal 7 Pattern classnames should end with RenderPattern, and that suffix
+ * may be omitted from the $pattern_name argument.
+ *
+ * @param  string $pattern_name  Two options here:
+ *   - the full classname or,
+ *   - the full classname without the suffix 'RenderPattern'
+ *
+ * @return \RenderPatternsPatternInterface
+ *
+ */
+function render_patterns_get($pattern_name) {
+  $original = $pattern_name;
+  if (!class_exists($pattern_name)) {
+    $pattern_name .= 'RenderPattern';
+  }
+  if (class_exists($pattern_name)) {
+    return new $pattern_name;
+  }
+  watchdog('render_pattern', 'Class %original does not exist.', array('%original' => $pattern_name), WATCHDOG_WARNING);
+
+  return NULL;
+}
+
+/**
+ * Implements hook_render_patterns_info().
+ *
+ * Register the default theme for pattern use.
+ */
+function render_patterns_render_patterns_info() {
+  return array(
+    'directory' => drupal_get_path('theme', variable_get('theme_default', '')) . '/render_patterns',
+    // Give the theme the higher weight so it can override.
+    'weight' => 10,
+  );
+}
+
+/**
+ * Implements hook_registry_files_alter().
+ *
+ * Adds all discovered patterns to the registry
+ */
+function render_patterns_registry_files_alter(&$files, $modules) {
+
+  // Search the filesystem for directories.
+  $list = array();
+  foreach (module_implements('render_patterns_info') as $module) {
+    $info = module_invoke($module, 'render_patterns_info');
+    if (!isset($info['weight'])) {
+      // Use this modules weight
+      $weight = 0;
+      foreach ($modules as $module) {
+        if ($module->name === 'render_patterns') {
+          $weight = $module->weight;
+          break;
+        }
+      }
+    }
+    $list[$module] = $info + array('weight' => $weight);
+  }
+  drupal_alter('render_patterns_info', $list);
+  foreach ($list as $item) {
+    $path = $item['directory'];
+    $scan = file_scan_directory($path, '/.*\.php$/', array('recurse' => FALSE));
+    $scan = array_fill_keys(array_keys($scan), array(
+      'module' => 'render_patterns',
+      'weight' => $item['weight'],
+
+    ));
+    $files += $scan;
+  }
+}
+

@@ -1,0 +1,8 @@
+/.web_package/*
+!/.web_package/hooks
+/.web_package/hooks/*
+!/.web_package/hooks/build
+docs/kit
+LICENSE.txt
+docs/source/auto-generated.outline.json
+help/auto-generated.outline.json
