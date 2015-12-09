@@ -23,18 +23,22 @@
  *
  * @return \RenderPatternsPatternInterface
  *
+ * @throws InvalidArgumentException When the pattern can't be found.
+ *
  */
 function render_patterns_get($pattern_name) {
-  $original = $pattern_name;
-  if (!class_exists($pattern_name)) {
-    $pattern_name .= 'RenderPattern';
+  try {
+    if (!class_exists($pattern_name)) {
+      $pattern_name .= 'RenderPattern';
+    }
+    if (class_exists($pattern_name)) {
+      return new $pattern_name;
+    }
+    throw new \InvalidArgumentException("Class $pattern_name does not exist. Try clearing the theme registry?");
+  } catch (\Exception $e) {
+    watchdog_exception('render_pattern', $e);
+    throw $e;
   }
-  if (class_exists($pattern_name)) {
-    return new $pattern_name;
-  }
-  watchdog('render_pattern', 'Class %original does not exist.', array('%original' => $pattern_name), WATCHDOG_WARNING);
-
-  return NULL;
 }
 
 /**
@@ -60,10 +64,10 @@ function render_patterns_registry_files_alter(&$files, $modules) {
   // Search the filesystem for directories.
   $list = array();
   foreach (module_implements('render_patterns_info') as $module) {
-    $info = module_invoke($module, 'render_patterns_info');
+    $weight = 0;
+    $info   = module_invoke($module, 'render_patterns_info');
     if (!isset($info['weight'])) {
       // Use this modules weight
-      $weight = 0;
       foreach ($modules as $module) {
         if ($module->name === 'render_patterns') {
           $weight = $module->weight;
