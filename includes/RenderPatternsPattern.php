@@ -24,6 +24,10 @@ abstract class RenderPatternsPattern implements RenderPatternsPatternInterface {
     return isset($this->vars[$key]) ? $this->vars[$key] : $default;
   }
 
+  public function __isset($key) {
+    return array_key_exists($key, $this->defaults());
+  }
+
   public function render() {
     if (!function_exists('drupal_render')) {
       throw new \RuntimeException("Missing function drupal_render().");
