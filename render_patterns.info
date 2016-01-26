@@ -1,7 +1,7 @@
 name = "Render Patterns"
 description = "It's like tpl files for render arrays."
 package = Other
-version = "7.x-1.1-rc1"
+version = "7.x-1.1-rc2"
 core = 7.x
 php = 5.3
 author = aklump
