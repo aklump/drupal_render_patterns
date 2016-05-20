@@ -32,6 +32,8 @@ abstract class RenderPatternsPattern implements RenderPatternsPatternInterface {
     if (!function_exists('drupal_render')) {
       throw new \RuntimeException("Missing function drupal_render().");
     }
-    return drupal_render($this->build());
+    $build = $this->build();
+    
+    return drupal_render($build);
   }
 }
