@@ -31,10 +31,11 @@ function render_patterns_get($pattern_name) {
     if (!class_exists($pattern_name)) {
       $pattern_name .= 'RenderPattern';
     }
+
     if (class_exists($pattern_name)) {
-      return new $pattern_name;
+      return new $pattern_name();
     }
-    throw new \InvalidArgumentException("Class $pattern_name does not exist. Try clearing the theme registry?");
+    throw new \InvalidArgumentException("Class $pattern_name does not exist. Try clearing all caches?");
   } catch (\Exception $e) {
     watchdog_exception('render_pattern', $e);
     throw $e;
