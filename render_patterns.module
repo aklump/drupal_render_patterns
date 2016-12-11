@@ -14,32 +14,35 @@
  * the namespacing for you.  This provides a consisten api for this module to
  * simply use the eventual classname.
  *
- * In Drupal 7 Pattern classnames should end with RenderPattern, and that suffix
+ * In Drupal 7 Pattern classnames should end with RenderPattern, and that
+ * suffix
  * may be omitted from the $pattern_name argument.
  *
- * @param  string $pattern_name  Two options here:
- *   - the full classname or,
- *   - the full classname without the suffix 'RenderPattern'
+ * @param  string $pattern_name Two options here:
+ *                              - the full classname or,
+ *                              - the full classname without the suffix
+ *                              'RenderPattern'
  *
  * @return \RenderPatternsPatternInterface
  *
  * @throws InvalidArgumentException When the pattern can't be found.
  *
  */
-function render_patterns_get($pattern_name) {
-  try {
-    if (!class_exists($pattern_name)) {
-      $pattern_name .= 'RenderPattern';
-    }
+function render_patterns_get($pattern_name)
+{
+    try {
+        if (!class_exists($pattern_name)) {
+            $pattern_name .= 'RenderPattern';
+        }
 
-    if (class_exists($pattern_name)) {
-      return new $pattern_name();
+        if (class_exists($pattern_name)) {
+            return new $pattern_name(data_api());
+        }
+        throw new \InvalidArgumentException("Class $pattern_name does not exist. Try clearing all caches?");
+    } catch (\Exception $e) {
+        watchdog_exception('render_pattern', $e);
+        throw $e;
     }
-    throw new \InvalidArgumentException("Class $pattern_name does not exist. Try clearing all caches?");
-  } catch (\Exception $e) {
-    watchdog_exception('render_pattern', $e);
-    throw $e;
-  }
 }
 
 /**
@@ -47,12 +50,13 @@ function render_patterns_get($pattern_name) {
  *
  * Register the default theme for pattern use.
  */
-function render_patterns_render_patterns_info() {
-  return array(
-    'directory' => drupal_get_path('theme', variable_get('theme_default', '')) . '/render_patterns',
-    // Give the theme the higher weight so it can override.
-    'weight' => 10,
-  );
+function render_patterns_render_patterns_info()
+{
+    return array(
+        'directory' => drupal_get_path('theme', variable_get('theme_default', '')) . '/render_patterns',
+        // Give the theme the higher weight so it can override.
+        'weight'    => 10,
+    );
 }
 
 /**
@@ -60,34 +64,35 @@ function render_patterns_render_patterns_info() {
  *
  * Adds all discovered patterns to the registry
  */
-function render_patterns_registry_files_alter(&$files, $modules) {
+function render_patterns_registry_files_alter(&$files, $modules)
+{
 
-  // Search the filesystem for directories.
-  $list = array();
-  foreach (module_implements('render_patterns_info') as $module) {
-    $weight = 0;
-    $info   = module_invoke($module, 'render_patterns_info');
-    if (!isset($info['weight'])) {
-      // Use this modules weight
-      foreach ($modules as $module) {
-        if ($module->name === 'render_patterns') {
-          $weight = $module->weight;
-          break;
+    // Search the filesystem for directories.
+    $list = array();
+    foreach (module_implements('render_patterns_info') as $module) {
+        $weight = 0;
+        $info = module_invoke($module, 'render_patterns_info');
+        if (!isset($info['weight'])) {
+            // Use this modules weight
+            foreach ($modules as $module) {
+                if ($module->name === 'render_patterns') {
+                    $weight = $module->weight;
+                    break;
+                }
+            }
         }
-      }
+        $list[$module] = $info + array('weight' => $weight);
     }
-    $list[$module] = $info + array('weight' => $weight);
-  }
-  drupal_alter('render_patterns_info', $list);
-  foreach ($list as $item) {
-    $path = $item['directory'];
-    $scan = file_scan_directory($path, '/.*\.php$/', array('recurse' => FALSE));
-    $scan = array_fill_keys(array_keys($scan), array(
-      'module' => 'render_patterns',
-      'weight' => $item['weight'],
+    drupal_alter('render_patterns_info', $list);
+    foreach ($list as $item) {
+        $path = $item['directory'];
+        $scan = file_scan_directory($path, '/.*\.php$/', array('recurse' => false));
+        $scan = array_fill_keys(array_keys($scan), array(
+            'module' => 'render_patterns',
+            'weight' => $item['weight'],
 
-    ));
-    $files += $scan;
-  }
+        ));
+        $files += $scan;
+    }
 }
 

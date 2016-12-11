@@ -8,3 +8,5 @@ author = "aklump"
 files[] = "includes/RenderPatternsPatternInterface.php"
 files[] = "includes/RenderPatternsPattern.php"
 files[] = "includes/RenderPatternsDSPattern.php"
+
+dependencies[] = "data_api"

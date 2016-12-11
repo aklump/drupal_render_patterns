@@ -3,6 +3,7 @@
  * @file
  * Defines the Pattern class.
  */
+use Drupal\data_api\DataTrait;
 
 /**
  * Represents a Pattern object class.
@@ -11,7 +12,17 @@
  */
 abstract class RenderPatternsPattern implements RenderPatternsPatternInterface
 {
+    use DataTrait;
+
     protected $vars;
+
+    /**
+     * RenderPatternsPattern constructor.
+     */
+    public function __construct(Data $dataApiData)
+    {
+        $this->setDataApiData($dataApiData);
+    }
 
     public function __get($key)
     {

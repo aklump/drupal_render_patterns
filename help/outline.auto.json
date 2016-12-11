@@ -1,0 +1,26 @@
+{
+    "chapters": [],
+    "sections": [
+        {
+            "id": "readme",
+            "title": "Drupal Module: Render Patterns",
+            "file": "README.md",
+            "sort": -10
+        },
+        {
+            "id": "arrays",
+            "title": "Using arrays when implementing a pattern",
+            "file": "arrays.md",
+            "sort": 0
+        },
+        {
+            "id": "display_suite",
+            "title": "Display Suite Integration",
+            "file": "display_suite.md",
+            "sort": 1
+        }
+    ],
+    "settings": {
+        "search": "tipuesearch"
+    }
+}

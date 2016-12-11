@@ -1,3 +1,6 @@
+---
+sort: -10
+---
 # Drupal Module: Render Patterns
 **Author:** Aaron Klump  <sourcecode@intheloftstudios.com>
 
