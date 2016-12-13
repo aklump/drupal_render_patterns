@@ -76,7 +76,7 @@ However, where this module really takes over is when you have a pattern that com
          */
         class ListOfThumbsRenderPattern extends RenderPatternsPattern {
 
-          public function defaults() {
+          public static function defaults() {
             return array(
               'images' => array(),
               'style' => 'thumb',

@@ -24,9 +24,7 @@
  *                              'RenderPattern'
  *
  * @return \RenderPatternsPatternInterface
- *
- * @throws InvalidArgumentException When the pattern can't be found.
- *
+ * @throws \Exception
  */
 function render_patterns_get($pattern_name)
 {

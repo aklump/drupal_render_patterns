@@ -101,7 +101,7 @@ What you had to do to get there
  */
 class ListOfThumbsRenderPattern extends RenderPatternsPattern {
 
-  public function defaults() {
+  public static function defaults() {
     return array(
       'images' => array(),
       'style' => 'thumb',

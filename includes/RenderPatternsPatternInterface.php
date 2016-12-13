@@ -15,9 +15,11 @@ interface RenderPatternsPatternInterface
     /**
      * Return an array of default values.
      *
+     * This is called only at instantiation.
+     *
      * @return array
      */
-    public function defaults();
+    public static function defaults();
 
     /**
      * Return a render array

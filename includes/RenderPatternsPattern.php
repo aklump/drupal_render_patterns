@@ -3,6 +3,7 @@
  * @file
  * Defines the Pattern class.
  */
+use Drupal\data_api\Data;
 use Drupal\data_api\DataTrait;
 
 /**
@@ -15,6 +16,7 @@ abstract class RenderPatternsPattern implements RenderPatternsPatternInterface
     use DataTrait;
 
     protected $vars;
+    protected $cache;
 
     /**
      * RenderPatternsPattern constructor.
@@ -22,14 +24,19 @@ abstract class RenderPatternsPattern implements RenderPatternsPatternInterface
     public function __construct(Data $dataApiData)
     {
         $this->setDataApiData($dataApiData);
+        $this->cache['defaults'] = static::defaults();
     }
 
     public function __get($key)
     {
-        $d = $this->defaults();
-        $default = isset($d[$key]) ? $d[$key] : null;
+        $default = !array_key_exists($key, $this->cache['defaults']) ?: $this->cache['defaults'][$key];
+        $value = !($exists = array_key_exists($key, $this->vars)) ? $default : $this->vars[$key];
+        $hook = "get__$key";
+        if (!method_exists($this, $hook)) {
+            return $value;
+        }
 
-        return isset($this->vars[$key]) ? $this->vars[$key] : $default;
+        return $this->{$hook}($value, $default, $exists);
     }
 
     public function __set($key, $value)
