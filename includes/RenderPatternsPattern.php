@@ -15,7 +15,7 @@ abstract class RenderPatternsPattern implements RenderPatternsPatternInterface
 {
     use DataTrait;
 
-    protected $vars;
+    protected $vars = array();
     protected $cache;
 
     /**
