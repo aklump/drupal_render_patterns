@@ -11,12 +11,13 @@ use Drupal\data_api\DataTrait;
  *
  * @brief An abstract base for all Pattern classes.
  */
-abstract class RenderPatternsPattern implements RenderPatternsPatternInterface
-{
+abstract class RenderPatternsPattern implements RenderPatternsPatternInterface {
+
     use DataTrait;
 
     protected $vars = array();
     protected $cache;
+    protected $module;
 
     /**
      * RenderPatternsPattern constructor.
@@ -57,5 +58,23 @@ abstract class RenderPatternsPattern implements RenderPatternsPatternInterface
         $build = $this->build();
 
         return drupal_render($build);
+    }
+
+    /**
+     * Return a SMACSS [cl]ass name based on $this->module.
+     *
+     * @param string $name
+     * @param bool   $isComponent If it's not a component (base__thing) then
+     *                            it's a style (base--style).  This determines
+     *                            the character used to glue the $name to the
+     *                            module.
+     *
+     * @return string
+     */
+    protected function cl($name = '', $isComponent = true)
+    {
+        $glue = $isComponent ? '_' : '-';
+
+        return $this->module . ($name ? str_repeat($glue, 2) . $name : '');
     }
 }
