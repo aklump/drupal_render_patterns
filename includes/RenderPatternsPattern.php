@@ -17,7 +17,6 @@ abstract class RenderPatternsPattern implements RenderPatternsPatternInterface {
 
     protected $vars = array();
     protected $cache;
-    protected $module;
 
     /**
      * RenderPatternsPattern constructor.
