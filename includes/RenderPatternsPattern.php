@@ -76,4 +76,33 @@ abstract class RenderPatternsPattern implements RenderPatternsPatternInterface {
 
         return $this->module . ($name ? str_repeat($glue, 2) . $name : '');
     }
+
+
+    /**
+     * Adds an ajax content wrapper around $element.
+     *
+     * @param $element
+     * @param $name
+     */
+    protected function ajaxWrap(&$element, $name)
+    {
+        $category = $this->cl($name);
+        $class = $category . '__ajax-content';
+        $ajax = array(
+            'content' => array(
+                0           => array(
+                    '#prefix' => '<div class="' . $class . '">',
+                    '#suffix' => '</div>',
+                ),
+                '#role'     => 'content',
+                '#selector' => ".$class",
+                '#class'    => $class,
+            ),
+        );
+
+        $temp = $ajax['content'][0];
+        $temp[] = $element;
+        $temp['#ajax_elements'] = $ajax;
+        $element = $temp;
+    }
 }
