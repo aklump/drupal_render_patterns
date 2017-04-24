@@ -121,11 +121,10 @@ abstract class RenderPatternsPattern implements RenderPatternsPatternInterface {
     protected function getForm($form_id)
     {
         $args = func_get_args();
-        $stash = [$_POST, $_GET];
-        unset($_GET);
-        unset($_POST);
+        $stash = $_POST;
+        $_POST = array();
         $form = call_user_func_array('drupal_get_form', $args);
-        list($_POST, $_GET) = $stash;
+        $_POST = $stash;
 
         return $form;
     }
