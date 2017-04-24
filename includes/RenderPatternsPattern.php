@@ -105,4 +105,28 @@ abstract class RenderPatternsPattern implements RenderPatternsPatternInterface {
         $temp['#ajax_elements'] = $ajax;
         $element = $temp;
     }
+
+    /**
+     * Use this instead of drupal_get_form when inserting forms during build().
+     *
+     * This will prevent an odd ajax error that will submit the form twice when
+     * building during an ajax response.  Essentially, if you try to build a
+     * form when $_POST has a value, then the form appears as if it's already
+     * been submitted.
+     *
+     * @param $form_id
+     *
+     * @return array
+     */
+    protected function getForm($form_id)
+    {
+        $args = func_get_args();
+        $stash = [$_POST, $_GET];
+        unset($_GET);
+        unset($_POST);
+        $form = call_user_func_array('drupal_get_form', $args);
+        list($_POST, $_GET) = $stash;
+
+        return $form;
+    }
 }
