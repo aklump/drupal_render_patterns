@@ -62,19 +62,25 @@ abstract class RenderPatternsPattern implements RenderPatternsPatternInterface {
     /**
      * Return a SMACSS [cl]ass name based on $this->module.
      *
-     * @param string $name
-     * @param bool   $isComponent If it's not a component (base__thing) then
-     *                            it's a style (base--style).  This determines
-     *                            the character used to glue the $name to the
-     *                            module.
+     * @param string|array $name        If this is an array, each element will
+     *                                  be converted to a class.
+     * @param bool         $isComponent If it's not a component (base__thing)
+     *                                  then it's a style (base--style).  This
+     *                                  determines the character used to glue
+     *                                  the $name to the module.
      *
      * @return string
      */
     protected function cl($name = '', $isComponent = true)
     {
+        $names = is_array($name) ? $name : [$name];
         $glue = $isComponent ? '_' : '-';
+        $classes = [];
+        foreach ($names as $name) {
+            $classes[] = $this->module . ($name ? str_repeat($glue, 2) . $name : '');
+        }
 
-        return $this->module . ($name ? str_repeat($glue, 2) . $name : '');
+        return implode(' ', $classes);
     }
 
 
