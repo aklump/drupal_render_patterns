@@ -29,7 +29,7 @@ abstract class RenderPatternsPattern implements RenderPatternsPatternInterface {
 
     public function __get($key)
     {
-        $default = !array_key_exists($key, $this->cache['defaults']) ?: $this->cache['defaults'][$key];
+        $default = !array_key_exists($key, $this->cache['defaults']) ? null : $this->cache['defaults'][$key];
         $value = !($exists = array_key_exists($key, $this->vars)) ? $default : $this->vars[$key];
         $hook = "get__$key";
         if (!method_exists($this, $hook)) {
