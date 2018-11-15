@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Display Suite Integration</title>
+  <link href="search/tipuesearch.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+</head>
+
+<body class="page--display_suite">
+<header>
+  <div class="pager">
+  <a href="defaults.html" class="prev defaults">&laquo;Defaults</a>
+  <a href="index.html" class="index">Index</a>
+  <a href="index.html" class="next index">Index&raquo;</a>
+</div>
+</header>
+
+  <div class="search__wrapper">
+  <form action="search--results.html">
+    <input type="text" class="search-input" name="q" id="tipue_search_input" autocomplete="off" required>
+  </form>
+</div>
+
+  <h1>Display Suite Integration</h1>
+  <div class="breadcrumb"><a href="index.html">Index</a></div>
+
+<section>
+
+<p>If you model your render pattern after a display suite layout and then implement the pattern in the layout tpl as seen below, you have the ultimate flexibility as you can programatically use the display suite layout very easily.</p>
+
+<p>This example implements the display suite layout in the theme and we use these files for the complete solution.</p>
+
+<pre><code>THEME/ds_layouts/example/
+THEME/ds_layouts/example/example.inc
+THEME/ds_layouts/example/example.tpl.php
+THEME/render_patterns/
+THEME/render_patterns/ExampleBasedOnDsLayoutRenderPattern.php
+</code></pre>
+
+<h2><code>example.inc</code></h2>
+
+<pre><code>&lt;?php
+function ds_example() {
+  return array(
+    'label' =&gt; t('Example'),
+    'regions' =&gt; array(
+      'content' =&gt; t('Content'),
+      'footer' =&gt; t('Footer'),
+    ),
+  );
+}
+</code></pre>
+
+<h2><code>example.tpl.inc</code></h2>
+
+<pre><code>&lt;?php
+/**
+ * @file
+ * Template for the example Display Suite layout.
+ *
+ * Variables:
+ * - rendered_by_ds bool
+ * - layout_attributes string
+ * - layout_wrapper string
+ * - content renderable
+ * - content_classes string
+ * - content_wrapper string
+ * - footer renderable
+ * - footer_classes string
+ * - footer_wrapper string
+ */
+$pattern = render_patterns_get('ExampleBasedOnDsLayout');
+$pattern-&gt;tag = 'div';
+
+// Now inject the variables from display suite.
+$pattern-&gt;content         = $content;
+$pattern-&gt;content_classes = $content_classes;
+$pattern-&gt;content_wrapper = $content_wrapper;
+$pattern-&gt;footer         = $footer;
+$pattern-&gt;footer_classes = $footer_classes;
+$pattern-&gt;footer_wrapper = $footer_wrapper;
+
+print $hp-&gt;render();
+</code></pre>
+
+<h2><code>ExampleBasedOnDsLayoutRenderPattern.php</code></h2>
+
+<pre><code>&lt;?php
+/**
+ * @file
+ * Generates a render pattern called ExampleBasedOnDsLayoutRenderPattern
+ */
+
+/**
+ * Represents a ExampleBasedOnDsLayoutRenderPattern object class.
+ * 
+ * @brief Shows how to integrate with display suite; notice that we are
+ * extending a different class, that is RenderPatternsDSPattern and not just
+ * RenderPatternsPattern.
+ *
+ * @see ds_example().
+ */
+class ExampleBasedOnDsLayoutRenderPattern extends RenderPatternsDSPattern {
+
+  // Instead of implementing the defaults() method we merely map this to the
+  // ds_layout and let that module provide the defaults for us.  If you need
+  // to provide additional defaults beyond the ds layout, then do like has
+  // be done here with the defaults method(), calling parent::defaults().
+  protected $ds_layout = 'example';
+
+  // parent::defaults() insures that all keys from the layout are set so
+  // you must do the following when setting non-layout defaults.
+  public function defaults() {
+    return array(
+      'tag' =&gt; 'h2',
+    ) + parent::defaults();
+  }
+
+  // The build method is the same.
+  public function build() {
+    $build[] = array(
+      '#theme' =&gt; 'html_tag', 
+      '#tag' =&gt; $this-&gt;tag, 
+      '#value' =&gt; t('Content'),
+    );
+    $build[] = array(
+      '#theme' =&gt; 'region',
+      '#value' =&gt; drupal_render($this-&gt;content),
+    );
+    $build[] = array(
+      '#theme' =&gt; 'html_tag', 
+      '#tag' =&gt; $this-&gt;tag, 
+      '#value' =&gt; t('Footer'),
+    );
+    $build[] = array(
+      '#theme' =&gt; 'region',
+      '#value' =&gt; drupal_render($this-&gt;footer),
+    );
+
+    return $build;  
+  }
+}
+</code></pre>
+</section>
+
+<div class="search__results">
+  <div id="tipue_search_content"></div>
+</div>
+
+<footer>
+  <div class="pager">
+  <a href="defaults.html" class="prev defaults">&laquo;Defaults</a>
+  <a href="index.html" class="index">Index</a>
+  <a href="index.html" class="next index">Index&raquo;</a>
+</div>
+  
+  <div id="footer-legaleeze">
+    <p class="legaleeze center">Version: 7.x-1.1-rc14 &bull; Last Updated: Wed, 14 Nov 2018 17:37:20 -0800</p>
+  </div>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="search/tipuesearch_content.js"></script>
+  <script src="search/tipuesearch_set.js"></script>
+  <script src="search/tipuesearch.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $('#tipue_search_input').tipuesearch();
+    });
+  </script>
+<script src="js/core.js"></script>
+</body>
+</html>
+
