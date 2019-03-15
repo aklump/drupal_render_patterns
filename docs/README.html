@@ -9,21 +9,19 @@
 
 <body class="page--readme">
 <header>
-  <div class="pager">
-  <a href="index.html" class="prev index">&laquo;Index</a>
-  <a href="index.html" class="index">Index</a>
-  <a href="CHANGELOG.html" class="next CHANGELOG">Changelog&raquo;</a>
-</div>
-</header>
-
-  <div class="search__wrapper">
+  <div class="pager"><a href="CHANGELOG.html" class="prev CHANGELOG">&laquo;Changelog</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="arrays.html" class="next arrays">Using arrays when implementing a pattern&raquo;</a></div></header>
+<section class="sub-header">
+  <div class="breadcrumbs"><a href="index.html">Index</a>
+         &raquo
+      </div>      <div class="search__wrapper">
   <form action="search--results.html">
     <input type="text" class="search-input" name="q" id="tipue_search_input" autocomplete="off" required>
   </form>
 </div>
+  </section>
 
-  <h1>Drupal Module: Render Patterns</h1>
-  <div class="breadcrumb"><a href="index.html">Index</a></div>
+
+<h1>Drupal Module: Render Patterns</h1>
 
 <section>
 
@@ -194,14 +192,9 @@ print drupal_render($obj-&gt;build());
 </div>
 
 <footer>
-  <div class="pager">
-  <a href="index.html" class="prev index">&laquo;Index</a>
-  <a href="index.html" class="index">Index</a>
-  <a href="CHANGELOG.html" class="next CHANGELOG">Changelog&raquo;</a>
-</div>
-  
+  <div class="pager"><a href="CHANGELOG.html" class="prev CHANGELOG">&laquo;Changelog</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="arrays.html" class="next arrays">Using arrays when implementing a pattern&raquo;</a></div>  
   <div id="footer-legaleeze">
-    <p class="legaleeze center">Version: 7.x-1.1-rc14 &bull; Last Updated: Wed, 14 Nov 2018 17:37:19 -0800</p>
+    <p class="legaleeze center">Version: 7.x-1.1-rc17 &bull; Last Updated: Fri, 15 Mar 2019 10:24:21 -0700</p>
   </div>
 </footer>
 
@@ -210,9 +203,9 @@ print drupal_render($obj-&gt;build());
   <script src="search/tipuesearch_set.js"></script>
   <script src="search/tipuesearch.min.js"></script>
   <script>
-    $(document).ready(function () {
-      $('#tipue_search_input').tipuesearch();
-    });
+    $(document).ready(function() {
+      $('#tipue_search_input').tipuesearch()
+    })
   </script>
 <script src="js/core.js"></script>
 </body>
