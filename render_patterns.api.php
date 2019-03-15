@@ -20,13 +20,12 @@
  *
  * @see hook_render_patterns_info_alter().
  */
-function hook_render_patterns_info()
-{
-    return array(
-        'directory' => drupal_get_path('module', 'my_module') . '/render_patterns',
-        // Give the theme the higher weight so it can override.
-        'weight'    => 10,
-    );
+function hook_render_patterns_info() {
+  return array(
+    'directory' => drupal_get_path('module', 'my_module') . '/render_patterns',
+    // Give the theme the higher weight so it can override.
+    'weight' => 10,
+  );
 }
 
 /**
@@ -34,8 +33,7 @@ function hook_render_patterns_info()
  *
  * @see  hook_render_patterns_info().
  */
-function hook_render_patterns_info_alter(&$info)
-{
-    // Chenge the default location of the render_patterns dir for the default theme.
-    $info['render_patterns']['directory'] = drupal_get_path('theme', variable_get('theme_default', '')) . '/includes/patterns';
+function hook_render_patterns_info_alter(&$info) {
+  // Chenge the default location of the render_patterns dir for the default theme.
+  $info['render_patterns']['directory'] = drupal_get_path('theme', variable_get('theme_default', '')) . '/includes/patterns';
 }
