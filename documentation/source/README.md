@@ -1,26 +1,27 @@
----
-sort: -10
----
 # Drupal Module: Render Patterns
+
 **Author:** Aaron Klump  <sourcecode@intheloftstudios.com>
 
 ## Summary
-**It's like tpl files for render arrays.**
 
-When building a site, if you find yourself rewriting the same combination of render arrays, say a repeating combination of several theme functions, (I would say) you are doing it wrong.  This module is inspired by component based design and handles these patterns in easy-to-use php classes, one per file, that are simply added to your module or theme, in a specified folder`.  For me it has had the effect of _taming the render array_ in my Drupal projects.
+The _Render Patterns_ module allows you to encapsulate Drupal render arrays as class objects, for repetitive use.  You expose only the dynamic elements of your render array as class properties, and the rest of the render array is hidden within the black box of the render pattern class.  This type of design makes sense if you need to reference the same render array in more than one place as it avoids errors caused by code duplication.  It comes from the [DRY principle](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
 
 You may also visit the [project page](http://www.drupal.org/project/render_patterns) on Drupal.org.
 
 ## Requirements
+
 1. A very basic understanding of php objects is needed to produce the code used by this module.  Most Drupal site builders will already be familiar with this.
 
 ## Installation
+
 1. Install as usual, see [http://drupal.org/node/70151](http://drupal.org/node/70151) for further information.
 
 ## Configuration
+
 There is nothing to configure aside from creating your classes as shown below.  Advanced help will reveal more documentation if you enable it.
 
 ## Suggested Use
+
 This probably should not be used as a one-to-one replacement for a render array based on a single theme function as this just adds a layer of abstraction and complexity.  It would be more straitforward to just create a render array directly.  
 
 And if you are not repeating the render array, you should also consider just creating the render array directly.
@@ -109,6 +110,7 @@ However, where this module really takes over is when you have a pattern that com
         }
 
 ## One more point `render()`.
+
 Notice that you can go directly to the rendered version by using the `render()` method. This is what you might want to do inside of a *.tpl.php file, where you actually need a string as the return value.  The following could show the contents of `list-of-thumbs.tpl.php`.
 
     <?php
@@ -132,9 +134,11 @@ For clarity the above is equivalent to doing the following:
     print drupal_render($obj->build());
 
 ## Design Decisions/Rationale
+
 With heavy use of render arrays in writing complex themes, I found that I was repeating the same render array configurations throughtout several locations: preprocessors, tpls, and display suite layouts.  This became a headache to keep in sync if such a pattern changed.  I thought, I need something like a theme declaration that returns a renderable array not a string.  This module is my answer implementing a write once, use often approach for these "render patterns".
 
 ## Contact
+
 * **In the Loft Studios**
 * Aaron Klump - Developer
 * PO Box 29294 Bellingham, WA 98228-1294
