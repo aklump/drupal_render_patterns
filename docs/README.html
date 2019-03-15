@@ -29,9 +29,7 @@
 
 <h2>Summary</h2>
 
-<p><strong>It's like tpl files for render arrays.</strong></p>
-
-<p>When building a site, if you find yourself rewriting the same combination of render arrays, say a repeating combination of several theme functions, (I would say) you are doing it wrong.  This module is inspired by component based design and handles these patterns in easy-to-use php classes, one per file, that are simply added to your module or theme, in a specified folder`.  For me it has had the effect of <em>taming the render array</em> in my Drupal projects.</p>
+<p>The <em>Render Patterns</em> module allows you to encapsulate Drupal render arrays as class objects, for repetitive use.  You expose only the dynamic elements of your render array as class properties, and the rest of the render array is hidden within the black box of the render pattern class.  This type of design makes sense if you need to reference the same render array in more than one place as it avoids errors caused by code duplication.  It comes from the <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself">DRY principle</a>.</p>
 
 <p>You may also visit the <a href="http://www.drupal.org/project/render_patterns">project page</a> on Drupal.org.</p>
 
@@ -194,7 +192,7 @@ print drupal_render($obj-&gt;build());
 <footer>
   <div class="pager"><a href="CHANGELOG.html" class="prev CHANGELOG">&laquo;Changelog</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="arrays.html" class="next arrays">Using arrays when implementing a pattern&raquo;</a></div>  
   <div id="footer-legaleeze">
-    <p class="legaleeze center">Version: 7.x-1.1-rc17 &bull; Last Updated: Fri, 15 Mar 2019 10:24:21 -0700</p>
+    <p class="legaleeze center">Version: 7.x-1.1 &bull; Last Updated: Fri, 15 Mar 2019 11:31:00 -0700</p>
   </div>
 </footer>
 
