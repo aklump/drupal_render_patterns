@@ -7,88 +7,54 @@
  * @{
  */
 
-/**
- * Future-proof factory function returns Pattern object.
- *
- * In future versions, when namespacing is supported, this function will handle
- * the namespacing for you.  This provides a consisten api for this module to
- * simply use the eventual classname.
- *
- * In Drupal 7 Pattern classnames should end with RenderPattern, and that
- * suffix
- * may be omitted from the $pattern_name argument.
- *
- * @param  string $pattern_name Two options here:
- *                              - the full classname or,
- *                              - the full classname without the suffix
- *                              'RenderPattern'
- *
- * @return \RenderPatternsPatternInterface
- * @throws \Exception
- */
-function render_patterns_get($pattern_name) {
-  try {
-    if (!class_exists($pattern_name)) {
-      $pattern_name .= 'RenderPattern';
-    }
+use Drupal\render_patterns\PatternInterface;
+use Drupal\render_patterns\RenderPatternsMessage;
+use Drupal\Core\Render\Markup;
 
-    if (class_exists($pattern_name)) {
-      return new $pattern_name(data_api());
-    }
-    throw new \InvalidArgumentException("Class $pattern_name does not exist. Try clearing all caches?");
+/**
+ * Factory function to generate a new pattern instance.
+ *
+ * @param string $pattern_name
+ *   The name of the pattern.
+ *
+ * @return \Drupal\render_patterns\PatternInterface
+ *   The pattern instance.
+ *
+ * @see \Drupal\render_patterns\PatternFactory::get
+ */
+function render_patterns_get(string $pattern_name, array $data = []): PatternInterface {
+  try {
+    return \Drupal::service('render_patterns.factory')
+      ->get($pattern_name, $data);
   }
-  catch (\Exception $e) {
-    watchdog_exception('render_pattern', $e);
-    throw $e;
+  catch (\Exception $exception) {
+    $message = t('In render pattern %name: @message', [
+      '%name' => $pattern_name,
+      '@message' => $exception->getMessage(),
+    ])->__toString();
+    \Drupal::messenger()->addError(Markup::create($message));
+    $pattern = new RenderPatternsMessage(data_api());
+    $pattern->message = $message;
+
+    return $pattern;
   }
 }
 
 /**
  * Implements hook_render_patterns_info().
  *
- * Register the default theme for pattern use.
+ * Automatically register the default theme as providing render patterns based
+ * on the existence of the directory.
  */
 function render_patterns_render_patterns_info() {
-  return array(
-    'directory' => drupal_get_path('theme', variable_get('theme_default', '')) . '/render_patterns',
-    // Give the theme the higher weight so it can override.
-    'weight' => 10,
-  );
-}
-
-/**
- * Implements hook_registry_files_alter().
- *
- * Adds all discovered patterns to the registry
- */
-function render_patterns_registry_files_alter(&$files, $modules) {
-
-  // Search the filesystem for directories.
-  $list = array();
-  foreach (module_implements('render_patterns_info') as $module) {
-    $weight = 0;
-    $info = module_invoke($module, 'render_patterns_info');
-    if (!isset($info['weight'])) {
-      // Use this modules weight
-      foreach ($modules as $module) {
-        if ($module->name === 'render_patterns') {
-          $weight = $module->weight;
-          break;
-        }
-      }
-    }
-    $list[$module] = $info + array('weight' => $weight);
+  $config = \Drupal::service('config.factory')->get('system.theme');
+  if (($theme_folder = \Drupal::root() . '/' . drupal_get_path('theme', $config->get('default')) . '/render_patterns')
+    && is_dir($theme_folder)) {
+    return [
+      'directory' => $theme_folder,
+      // Give the theme the higher weight so it can override.
+      'weight' => 10,
+    ];
   }
-  drupal_alter('render_patterns_info', $list);
-  foreach ($list as $item) {
-    $path = $item['directory'];
-    $scan = file_scan_directory($path, '/.*\.php$/', array('recurse' => FALSE));
-    $scan = array_fill_keys(array_keys($scan), array(
-      'module' => 'render_patterns',
-      'weight' => $item['weight'],
-
-    ));
-    $files += $scan;
-  }
+  return [];
 }
-

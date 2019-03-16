@@ -1,0 +1,8 @@
+services:
+  render_patterns.factory:
+    class: Drupal\render_patterns\PatternFactory
+    arguments: ['@data_api']
+  render_patterns.autoloader:
+    class: Drupal\render_patterns\EventSubscriber\PatternAutoloader
+    tags:
+      - {name: event_subscriber}

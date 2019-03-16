@@ -35,5 +35,10 @@ function hook_render_patterns_info() {
  */
 function hook_render_patterns_info_alter(&$info) {
   // Chenge the default location of the render_patterns dir for the default theme.
-  $info['render_patterns']['directory'] = drupal_get_path('theme', variable_get('theme_default', '')) . '/includes/patterns';
+  // @FIXME
+// // @FIXME
+// // This looks like another module's variable. You'll need to rewrite this call
+// // to ensure that it uses the correct configuration object.
+// $info['render_patterns']['directory'] = drupal_get_path('theme', variable_get('theme_default', '')) . '/includes/patterns';
+
 }

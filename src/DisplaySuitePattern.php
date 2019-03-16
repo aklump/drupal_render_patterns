@@ -9,7 +9,7 @@ namespace Drupal\render_patterns;
  *
  * @see   ds_get_layout_info().
  */
-abstract class RenderPatternsDSPattern extends RenderPatternsPattern {
+abstract class DisplaySuitePattern extends RenderPatternsPattern {
 
   // Map to the ds layout by ds layout key.
   protected $ds_layout = '';

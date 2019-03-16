@@ -1,4 +1,7 @@
 <?php
+
+namespace Drupal\render_patterns;
+
 /**
  * @file
  * Defines the PatternInterface class.
@@ -9,19 +12,10 @@
  *
  * @brief The interface for all Pattern classes.
  */
-interface RenderPatternsPatternInterface {
+interface PatternInterface {
 
   /**
-   * Return an array of default values.
-   *
-   * This is called only at instantiation.
-   *
-   * @return array
-   */
-  public static function defaults();
-
-  /**
-   * Return a render array
+   * Return a render array.
    *
    * @return [type] [description]
    */
