@@ -1,8 +1,5 @@
 <?php
-/**
- * @file
- * Defines the DSPattern class.
- */
+namespace Drupal\render_patterns;
 
 /**
  * Represents a Pattern object class.
@@ -19,7 +16,7 @@ abstract class RenderPatternsDSPattern extends RenderPatternsPattern {
 
   public function defaults() {
     $layout = $this->ds_layout;
-    if (!module_exists('ds')) {
+    if (!\Drupal::moduleHandler()->moduleExists('ds')) {
       throw new \RuntimeException("Missing dependency module: Display Suite");
     }
     $info = ds_get_layout_info();

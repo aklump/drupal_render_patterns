@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Object Properties</title>
+  <link href="search/tipuesearch.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+</head>
+
+<body class="page--properties">
+<header>
+  <div class="pager"><a href="display_suite.html" class="prev display_suite">&laquo;Display Suite Integration</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="validation.html" class="next validation">Property Validation&raquo;</a></div></header>
+<section class="sub-header">
+  <div class="breadcrumbs"><a href="index.html">Index</a>
+         &raquo
+      </div>      <div class="search__wrapper">
+  <form action="search--results.html">
+    <input type="text" class="search-input" name="q" id="tipue_search_input" autocomplete="off" required>
+  </form>
+</div>
+  </section>
+
+
+<h1>Object Properties</h1>
+
+<section>
+
+<p>A render pattern encapsulates the render array into a class and then exposes only those properties that may change across instances.</p>
+
+<p>To set a property you have two options: set the value when you instantiate the pattern, or set it on the pattern directly.</p>
+
+<p>In these examples I have defined a render pattern as a PHP class <code>Drupal\render_pattern\Pattern\Headline</code> located in my default theme's folder as <em>{theme dir}/render&#95;patterns/Headline.php</em>.</p>
+
+<h2>Set the Property on Instantiation</h2>
+
+<pre><code>$pattern = render_patterns_get('Headline', [
+  'title' =&gt; 'Hello World',
+]);
+</code></pre>
+
+<h2>Set the Property Directly</h2>
+
+<pre><code>$pattern = render_patterns_get('Headline')
+$pattern-&gt;title = 'Hello World';
+</code></pre>
+
+<h2>Property Validation</h2>
+
+<p>When you try to set a property value, it will be validated against the schema.  If the property is not allowed, or it's value is not valid then an error situation occurs.</p>
+
+<p>How this manifests depends on when you're setting the property.  On instantion, as in the first example, the error is handled by drupal error messages; as well as the object returned is a markup render array with the error message.  So if you render the object, you will also see the error message.</p>
+
+<p>When setting directly, i.e., <code>$pattern-&gt;title</code>, an exception is thrown.</p>
+
+<h2>Default Values</h2>
+
+<p>Default values will only be returned for a property if the property has not been set.  Once set, the default mechanisms as described below do not apply.</p>
+
+<p><strong>Default values, whether static or dynamic, are not validated per the schema, so be careful.</strong></p>
+
+<h3>Static Default Values</h3>
+
+<p>Set your default values in <code>pattern::$properties</code>, using the key <code>default</code>, something like this:</p>
+
+<pre><code>protected $properties = [
+  'title' =&gt; [
+    'type' =&gt; 'string',
+    'default' =&gt; 'Title Goes Here',
+  ],
+];      
+</code></pre>
+
+<h3>Dynamic Default Values</h3>
+
+<p>If you need to provide non-static values for a property, use a method that follows the naming convention of <code>default_{property}</code>, e.g. <code>default__title</code>.  When using this approach, ask your self if the value can be cached or not.  If it cannot be cached, that is it should be called every time the property is requested and has not been overloaded then simply return a value in the method.  However if the method needs to be called only once and then it's value can be cached, return the value wrapped in <code>Cacheable::value()</code> as seen here.</p>
+
+<pre><code>  protected function default__tag() {
+    return Cacheable::value('h3');
+  }
+</code></pre>
+
+<p>In this example the value should not be cached and so you'd do like shown below.  This is an obvious use case because you want <code>$pattern-&gt;now</code> to always return the current time.</p>
+
+<pre><code>  protected function default__now() {
+    return time();
+  }        
+</code></pre>
+
+<h2>Get the Value</h2>
+
+<p>Getting the value goes through a series of steps.  Refer to this flowchart for more info:</p>
+
+<p><img src="images/getter.png" alt="getter" /></p>
+
+<h3><code>get__* methods</code></h3>
+
+<p>These are expensive so only use if needed.  Try to use <code>default__*</code> first, if possible.  You should only use a <code>get__*</code> method if you need to process the value every time it is retrieved.</p>
+</section>
+
+<div class="search__results">
+  <div id="tipue_search_content"></div>
+</div>
+
+<footer>
+  <div class="pager"><a href="display_suite.html" class="prev display_suite">&laquo;Display Suite Integration</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="validation.html" class="next validation">Property Validation&raquo;</a></div>  
+  <div id="footer-legaleeze">
+    <p class="legaleeze center">Version: 1.0 &bull; Last Updated: Fri, 15 Mar 2019 17:53:17 -0700</p>
+  </div>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="search/tipuesearch_content.js"></script>
+  <script src="search/tipuesearch_set.js"></script>
+  <script src="search/tipuesearch.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#tipue_search_input').tipuesearch()
+    })
+  </script>
+<script src="js/core.js"></script>
+</body>
+</html>
+

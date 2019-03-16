@@ -1,11 +1,5 @@
 <?php
-/**
- * @file
- * Defines the Pattern class.
- */
-
-use Drupal\data_api\Data;
-use Drupal\data_api\DataTrait;
+namespace Drupal\render_patterns;
 
 /**
  * Represents a Pattern object class.
@@ -53,7 +47,7 @@ abstract class RenderPatternsPattern implements RenderPatternsPatternInterface {
     }
     $build = $this->build();
 
-    return drupal_render($build);
+    return \Drupal::service("renderer")->render($build);
   }
 
   /**
