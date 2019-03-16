@@ -6,17 +6,45 @@ use AKlump\Data\DataInterface;
 use Drupal\data_api\DataTrait;
 use JsonSchema\Constraints\Constraint;
 use JsonSchema\Validator;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 
 /**
  * Represents a Pattern object class.
  *
  * @brief An abstract base for all Pattern classes.
+ *
+ * Be sure to define either of the following on your child class, an array
+ *   which is a JSON schema.
+ *  - class::$properties
+ *  - class::$schema
+ *
+ * You may use the following API methods to influence property values; see
+ *   documentation for more info.
+ * - protected function default__{property_name}()
+ * - protected function get__{property_name}{))
+ *
+ * @link https://json-schema.org/latest/json-schema-validation.html
  */
 abstract class Pattern implements PatternInterface {
 
   use DataTrait;
 
-  protected $vars = [];
+  /**
+   * Holds the block for the BEM.
+   *
+   * @var string
+   *
+   * @see ::cl
+   */
+  public $module = '';
+
+  /**
+   * Holds overridden values.
+   *
+   * @var array
+   */
+  protected $overrides = [];
 
   /**
    * The hardcoded schema array.
@@ -57,6 +85,15 @@ abstract class Pattern implements PatternInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('data_api')
+    );
+  }
+
+  /**
    * Verify that $key can be set as $value.
    *
    * @param string $key
@@ -69,7 +106,7 @@ abstract class Pattern implements PatternInterface {
    * @throws \JsonSchema\Exception\ValidationException
    *   If the schema validation fails.
    */
-  public function validateAgainstSchema(string $key, $value): void {
+  protected function validateKeyValueBySchema(string $key, $value): void {
     $schema = $this->getSchema();
 
     // Verify $key is allowed to be set.
@@ -85,93 +122,89 @@ abstract class Pattern implements PatternInterface {
     // When validating a single key we have no concept of the dataset so, we
     // have to ignore the required part of the schema.
     unset($schema['required']);
-    $this->validator->validate(
-      $data,
-      $schema,
-      Constraint::CHECK_MODE_EXCEPTIONS
-    );
-  }
-
-  public static function defaults() {
-    return [];
+    $this->validator->validate($data, $schema, Constraint::CHECK_MODE_EXCEPTIONS);
   }
 
   /**
    * {@inheritdoc}
    */
   public function __get($key) {
-    if (!in_array($key, get_class_vars(static::class))) {
-      $get_method = "get__$key";
-      $has_dynamic_method = method_exists($this, $get_method);
-      $is_overridden = array_key_exists($key, $this->vars);
-      $override_value = $this->vars[$key] ?? NULL;
-      if (!$has_dynamic_method && $is_overridden) {
-        return $override_value;
-      }
-
-      // Determine the default because we don't have an overridden value.
-      $default_method = "default__$key";
-      $default_value = $this->getSchema()['properties'][$key]['default'] ?? NULL;
-      if (method_exists($this, $default_method)) {
-        $default_value = $this->{$default_method}($default_value);
-
-        // Cache this value if we are asked.
-        if ($default_value instanceof Cacheable) {
-          $this->vars[$key] = $default_value->value;
-          $default_value = $default_value->value;
-        }
-      }
-
-      // Check for a method on the class.
-      if ($has_dynamic_method) {
-        $dynamic_value = $this->{$get_method}($override_value, $default_value, $is_overridden);
-
-        // Cache this value if we are asked.
-        if ($dynamic_value instanceof Cacheable) {
-          $this->vars[$key] = $dynamic_value->value;
-          $dynamic_value = $dynamic_value->value;
-        }
-
-        return $dynamic_value;
-      }
-
-      return $is_overridden ? $override_value : $default_value;
+    $get_method = "get__$key";
+    $has_dynamic_method = method_exists($this, $get_method);
+    $is_overridden = array_key_exists($key, $this->overrides);
+    $override_value = $this->overrides[$key] ?? NULL;
+    if (!$has_dynamic_method && $is_overridden) {
+      return $override_value;
     }
+
+    // Determine the default because we don't have an overridden value.
+    $default_method = "default__$key";
+    $default_value = $this->getSchema()['properties'][$key]['default'] ?? NULL;
+    if (method_exists($this, $default_method)) {
+      $default_value = $this->{$default_method}($default_value);
+
+      // Cache this value if we are asked.
+      if ($default_value instanceof Uncacheable) {
+        $default_value = $default_value->value;
+      }
+      else {
+        // We should cache this value.
+        $this->overrides[$key] = $default_value;
+      }
+    }
+
+    // Check for a method on the class.
+    if ($has_dynamic_method) {
+      return $this->{$get_method}($override_value, $default_value, $is_overridden);
+    }
+
+    return $is_overridden ? $override_value : $default_value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function __set($key, $value) {
-    if (!in_array($key, get_class_vars(static::class))) {
-      $this->validateAgainstSchema($key, $value);
-      $this->vars[$key] = $value;
-    }
-  }
-
-  public function __isset($key) {
-    // TODO Rewrite this.
-    return array_key_exists($key, $this->defaults());
+    $this->validateKeyValueBySchema($key, $value);
+    $this->overrides[$key] = $value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function render() {
-    return \Drupal::service("renderer")->render($this->build);
+  public function __isset($key) {
+    return array_key_exists($key, $this->overrides);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __unset($key) {
+    unset($this->overrides[$key]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function render(): string {
+
+    // TODO Explore the implications of render contexts with this.  May want to deprectate this method. 2019-03-16T10:11, aklump
+    return \Drupal::service('renderer')->renderRoot($this->build());
   }
 
   /**
    * Return a SMACSS [cl]ass name based on $this->module.
    *
-   * @param string|array $name If this is an array, each element will
-   *                                  be converted to a class.
-   * @param bool $isComponent If it's not a component (base__thing)
-   *                                  then it's a style (base--style).  This
-   *                                  determines the character used to glue
-   *                                  the $name to the module.
+   * @param string|array $name
+   *   If this is an array, each element will be converted to a class.
+   * @param bool $isComponent
+   *   If it's not a component (base__thing) then it's a style (base--style).
+   *   This determines the character used to glue the $name to the module.
    *
    * @return string
+   *   The classname
+   *
+   * @deprecated This will be removed in a future version.
    */
   protected function cl($name = '', $isComponent = TRUE) {
     $names = is_array($name) ? $name : [$name];
@@ -184,14 +217,15 @@ abstract class Pattern implements PatternInterface {
     return implode(' ', $classes);
   }
 
-
   /**
    * Adds an ajax content wrapper around $element.
    *
-   * @param $element
-   * @param $name
+   * @param array $element
+   *   The element to be wrapped.
+   * @param string $name
+   *   The name of the element, used for ::cl().
    */
-  protected function ajaxWrap(&$element, $name) {
+  protected function ajaxWrap(array &$element, string $name): void {
     $category = $this->cl($name);
     $class = $category . '__ajax-content';
     $ajax = [
@@ -220,11 +254,13 @@ abstract class Pattern implements PatternInterface {
    * form when $_POST has a value, then the form appears as if it's already
    * been submitted.
    *
-   * @param $form_id
+   * @param string $form_id
+   *   The form id.
    *
    * @return array
+   *   The form build array.
    */
-  protected function getForm($form_id) {
+  protected function getForm(string $form_id): array {
     // TODO This has not been ported to D8 yet.
     $args = func_get_args();
     $stash = $_POST;
@@ -243,8 +279,9 @@ abstract class Pattern implements PatternInterface {
    * @return array
    *   The schema for this render pattern.
    */
-  protected function getSchema() {
+  protected function getSchema(): array {
     if (empty($this->cache['schema'])) {
+      $this->cache['schema'] = [];
       if (!empty($this->schema)) {
         $this->cache['schema'] = $this->schema;
       }

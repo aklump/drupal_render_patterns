@@ -17,16 +17,18 @@ interface PatternInterface {
   /**
    * Return a render array.
    *
-   * @return [type] [description]
+   * @return array
+   *   The render array representing this pattern.
    */
-  public function build();
+  public function build(): array;
 
   /**
    * Renders the build array using drupal_render().
    *
    * @return string
+   *   The markup for this pattern instance.
    *
    * @throws RuntimeException If unabled to render.
    */
-  public function render();
+  public function render(): string;
 }

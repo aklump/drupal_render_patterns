@@ -31,15 +31,15 @@ However, where this module really takes over is when you have a pattern that com
 ## How you implement
 
     <?php
-    $obj = render_patterns_get("ListOfThumbs");
-    $obj->images = array(
-      'public://sun.jpg',
-      'public://moon.jpg',
-      'public://stars.jpg',
-    );
-    $render = $obj->build();
+    $render_array = render_patterns_get("ListOfThumbs", [
+      'images' => [
+         'public://sun.jpg',
+         'public://moon.jpg',
+         'public://stars.jpg',
+      ]
+    ])->build();
 
-## What you get in `$render`
+## What you get in `$render_array`
 
     Array
     (
@@ -62,27 +62,28 @@ However, where this module really takes over is when you have a pattern that com
 ## What you had to do to get there
 
 1. Enable this module.
-1. Create a render pattern by creating a file called `THEME/render_patterns/ListOfThumbsRenderPattern.php` the contents of which are:
+1. Create a render pattern by creating a file called `THEME/render_patterns/ListOfThumbs.php` the contents of which are:
 
         <?php
+        
+        use \Drupal\render_patterns\Pattern;
+        
         /**
-         * @file
-         * Generates a render pattern called ListOfThumbsRenderPattern
-         */
-
-        /**
-         * Represents a ListOfThumbsRenderPattern object class.
+         * Represents a ListOfThumbs object class.
          * 
          * @brief Renders images in a thumbnail image style as a list.
          */
-        class ListOfThumbsRenderPattern extends RenderPatternsPattern {
-
-          public static function defaults() {
-            return array(
-              'images' => array(),
-              'style' => 'thumb',
-            );
-          }
+        class ListOfThumbs extends Pattern {
+        
+          protected $properties = [
+            'images' => [
+              'type' => 'array',
+            ],
+            'style' => [
+              'type' => 'string',
+              'default' => 'thumb',
+            ]
+          ]
 
           public function build() {
             $items = array();
@@ -114,13 +115,13 @@ However, where this module really takes over is when you have a pattern that com
 Notice that you can go directly to the rendered version by using the `render()` method. This is what you might want to do inside of a *.tpl.php file, where you actually need a string as the return value.  The following could show the contents of `list-of-thumbs.tpl.php`.
 
     <?php
-    $obj = render_patterns_get("ListOfThumbs");
-    $obj->images = array(
-      'public://sun.jpg',
-      'public://moon.jpg',
-      'public://stars.jpg',
-    );
-    print $obj->render();
+    print render_patterns_get("ListOfThumbs", [
+      'images' => [
+         'public://sun.jpg',
+         'public://moon.jpg',
+         'public://stars.jpg',
+      ]
+    ])->render();
 
 For clarity the above is equivalent to doing the following:
 

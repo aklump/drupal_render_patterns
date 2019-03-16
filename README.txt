@@ -49,15 +49,15 @@ Suggested Use
 How you implement
 
 <?php
-$obj = render_patterns_get("ListOfThumbs");
-$obj->images = array(
-  'public://sun.jpg',
-  'public://moon.jpg',
-  'public://stars.jpg',
-);
-$render = $obj->build();
+$render_array = render_patterns_get("ListOfThumbs", [
+  'images' => [
+     'public://sun.jpg',
+     'public://moon.jpg',
+     'public://stars.jpg',
+  ]
+])->build();
 
-What you get in $render
+What you get in $render_array
 
 Array
 (
@@ -84,27 +84,27 @@ What you had to do to get there
 
     1. Enable this module.
     2. Create a render pattern by creating a file called
-       THEME/render_patterns/ListOfThumbsRenderPattern.php the contents of
-       which are:
+       THEME/render_patterns/ListOfThumbs.php the contents of which are:
 <?php
-/**
- * @file
- * Generates a render pattern called ListOfThumbsRenderPattern
- */
+
+use \Drupal\render_patterns\Pattern;
 
 /**
- * Represents a ListOfThumbsRenderPattern object class.
+ * Represents a ListOfThumbs object class.
  *
  * @brief Renders images in a thumbnail image style as a list.
  */
-class ListOfThumbsRenderPattern extends RenderPatternsPattern {
+class ListOfThumbs extends Pattern {
 
-  public static function defaults() {
-    return array(
-      'images' => array(),
-      'style' => 'thumb',
-    );
-  }
+  protected $properties = [
+    'images' => [
+      'type' => 'array',
+    ],
+    'style' => [
+      'type' => 'string',
+      'default' => 'thumb',
+    ]
+  ]
 
   public function build() {
     $items = array();
@@ -138,13 +138,13 @@ One more point render().
    *.tpl.php file, where you actually need a string as the return value.
    The following could show the contents of list-of-thumbs.tpl.php.
 <?php
-$obj = render_patterns_get("ListOfThumbs");
-$obj->images = array(
-  'public://sun.jpg',
-  'public://moon.jpg',
-  'public://stars.jpg',
-);
-print $obj->render();
+print render_patterns_get("ListOfThumbs", [
+  'images' => [
+     'public://sun.jpg',
+     'public://moon.jpg',
+     'public://stars.jpg',
+  ]
+])->render();
 
    For clarity the above is equivalent to doing the following:
 <?php

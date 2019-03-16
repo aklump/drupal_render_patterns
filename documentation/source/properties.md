@@ -17,6 +17,14 @@ In these examples I have defined a render pattern as a PHP class `Drupal\render_
     $pattern = render_patterns_get('Headline')
     $pattern->title = 'Hello World';
 
+## Using `isset` and `unset`
+
+These work a little different, but logically.
+
+`isset($pattern->title)` will return `true` if the title has been overridden.  It will return `false`, even if the default value has a value.  So it's really answering the question, "Does title have a value other than it's default?"
+
+`unset($pattern->title)` will remove the override value and put it back in the default state.  Incidentally this will cause a `default__*` method, whose return value was previously cached, to be called again.
+
 ## Property Validation
 
 When you try to set a property value, it will be validated against the schema.  If the property is not allowed, or it's value is not valid then an error situation occurs.
@@ -44,16 +52,18 @@ Set your default values in `pattern::$properties`, using the key `default`, some
 
 ### Dynamic Default Values
 
-If you need to provide non-static values for a property, use a method that follows the naming convention of `default_{property}`, e.g. `default__title`.  When using this approach, ask your self if the value can be cached or not.  If it cannot be cached, that is it should be called every time the property is requested and has not been overloaded then simply return a value in the method.  However if the method needs to be called only once and then it's value can be cached, return the value wrapped in `Cacheable::value()` as seen here.
+If you need to provide non-static values for a property, use a method that follows the naming convention of `default_{property}`, e.g. `default__title`.  This method will only be called if a value for the property has not been overridden.  It will be called once or always dependent upon how you return your value.
+
+If the method returns the same value every time, it is cacheable.  Just return the default value like this.  The method will only be called the first time the property is accessed.
 
       protected function default__tag() {
-        return Cacheable::value('h3');
+        return 'h3';
       }
 
-In this example the value should not be cached and so you'd do like shown below.  This is an obvious use case because you want `$pattern->now` to always return the current time.
+If the method must do runtime calculation and may return a different default value each time, then it is not cacheable.  You must wrap the return value in `Uncacheable::value()` as seen in the example below.  This is an obvious use case because you want `$pattern->now` to always return the current time.
 
       protected function default__now() {
-        return time();
+        return Uncacheable::value(time());
       }        
 
 ## Get the Value
@@ -64,4 +74,4 @@ Getting the value goes through a series of steps.  Refer to this flowchart for m
 
 ### `get__* methods`
 
-These are expensive so only use if needed.  Try to use `default__*` first, if possible.  You should only use a `get__*` method if you need to process the value every time it is retrieved.
+These are expensive so only use if needed.  Try to use `default__*` first, if possible.  You should only use a `get__*` method if you need to process the value every time it is retrieved.  The return value is never cached.  This may be removed in a future version pending performance impact analysis.

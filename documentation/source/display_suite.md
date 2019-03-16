@@ -1,5 +1,8 @@
 # Display Suite Integration
 
+
+**This has not been ported to 8.x branch yet.**
+
 If you model your render pattern after a display suite layout and then implement the pattern in the layout tpl as seen below, you have the ultimate flexibility as you can programatically use the display suite layout very easily.
 
 This example implements the display suite layout in the theme and we use these files for the complete solution.

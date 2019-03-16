@@ -9,7 +9,7 @@
 
 <body class="page--readme">
 <header>
-  <div class="pager"><a href="CHANGELOG.html" class="prev CHANGELOG">&laquo;Changelog</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="arrays.html" class="next arrays">Using arrays when implementing a pattern&raquo;</a></div></header>
+  <div class="pager"><a href="display_suite.html" class="prev display_suite">&laquo;Display Suite Integration</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="properties.html" class="next properties">Object Properties&raquo;</a></div></header>
 <section class="sub-header">
   <div class="breadcrumbs"><a href="index.html">Index</a>
          &raquo
@@ -60,16 +60,16 @@
 <h2>How you implement</h2>
 
 <pre><code>&lt;?php
-$obj = render_patterns_get("ListOfThumbs");
-$obj-&gt;images = array(
-  'public://sun.jpg',
-  'public://moon.jpg',
-  'public://stars.jpg',
-);
-$render = $obj-&gt;build();
+$render_array = render_patterns_get("ListOfThumbs", [
+  'images' =&gt; [
+     'public://sun.jpg',
+     'public://moon.jpg',
+     'public://stars.jpg',
+  ]
+])-&gt;build();
 </code></pre>
 
-<h2>What you get in <code>$render</code></h2>
+<h2>What you get in <code>$render_array</code></h2>
 
 <pre><code>Array
 (
@@ -94,27 +94,28 @@ $render = $obj-&gt;build();
 
 <ol>
 <li>Enable this module.</li>
-<li><p>Create a render pattern by creating a file called <code>THEME/render_patterns/ListOfThumbsRenderPattern.php</code> the contents of which are:</p>
+<li><p>Create a render pattern by creating a file called <code>THEME/render_patterns/ListOfThumbs.php</code> the contents of which are:</p>
 
 <pre><code>&lt;?php
-/**
- * @file
- * Generates a render pattern called ListOfThumbsRenderPattern
- */
+
+use \Drupal\render_patterns\Pattern;
 
 /**
- * Represents a ListOfThumbsRenderPattern object class.
+ * Represents a ListOfThumbs object class.
  * 
  * @brief Renders images in a thumbnail image style as a list.
  */
-class ListOfThumbsRenderPattern extends RenderPatternsPattern {
+class ListOfThumbs extends Pattern {
 
-  public static function defaults() {
-    return array(
-      'images' =&gt; array(),
-      'style' =&gt; 'thumb',
-    );
-  }
+  protected $properties = [
+    'images' =&gt; [
+      'type' =&gt; 'array',
+    ],
+    'style' =&gt; [
+      'type' =&gt; 'string',
+      'default' =&gt; 'thumb',
+    ]
+  ]
 
   public function build() {
     $items = array();
@@ -148,13 +149,13 @@ class ListOfThumbsRenderPattern extends RenderPatternsPattern {
 <p>Notice that you can go directly to the rendered version by using the <code>render()</code> method. This is what you might want to do inside of a *.tpl.php file, where you actually need a string as the return value.  The following could show the contents of <code>list-of-thumbs.tpl.php</code>.</p>
 
 <pre><code>&lt;?php
-$obj = render_patterns_get("ListOfThumbs");
-$obj-&gt;images = array(
-  'public://sun.jpg',
-  'public://moon.jpg',
-  'public://stars.jpg',
-);
-print $obj-&gt;render();
+print render_patterns_get("ListOfThumbs", [
+  'images' =&gt; [
+     'public://sun.jpg',
+     'public://moon.jpg',
+     'public://stars.jpg',
+  ]
+])-&gt;render();
 </code></pre>
 
 <p>For clarity the above is equivalent to doing the following:</p>
@@ -190,9 +191,9 @@ print drupal_render($obj-&gt;build());
 </div>
 
 <footer>
-  <div class="pager"><a href="CHANGELOG.html" class="prev CHANGELOG">&laquo;Changelog</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="arrays.html" class="next arrays">Using arrays when implementing a pattern&raquo;</a></div>  
+  <div class="pager"><a href="display_suite.html" class="prev display_suite">&laquo;Display Suite Integration</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="properties.html" class="next properties">Object Properties&raquo;</a></div>  
   <div id="footer-legaleeze">
-    <p class="legaleeze center">Version: 1.0 &bull; Last Updated: Fri, 15 Mar 2019 17:53:16 -0700</p>
+    <p class="legaleeze center">Version: 1.0 &bull; Last Updated: Sat, 16 Mar 2019 10:00:07 -0700</p>
   </div>
 </footer>
 

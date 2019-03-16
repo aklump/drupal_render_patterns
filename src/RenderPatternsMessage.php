@@ -16,7 +16,7 @@ class RenderPatternsMessage extends Pattern {
   /**
    * {@inheritdoc}
    */
-  public function build() {
+  public function build(): array {
     return [
       '#markup' => $this->message,
     ];

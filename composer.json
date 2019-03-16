@@ -1,5 +1,11 @@
 {
     "require": {
-        "justinrainbow/json-schema": "^5.2"
+        "justinrainbow/json-schema": "^5.2",
+        "aklump/data": "^0.0.28"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Drupal\\render_patterns\\": "src/"
+        }
     }
 }

@@ -1,31 +1,52 @@
 <?php
+
 /**
  * @file
  * Base file for the render_patterns module.
  *
- * @defgroup render_patterns Render Patterns
- * @{
  */
 
+use Drupal\Core\Render\Markup;
 use Drupal\render_patterns\PatternInterface;
 use Drupal\render_patterns\RenderPatternsMessage;
-use Drupal\Core\Render\Markup;
+use Drupal\render_patterns\MissingPatternException;
 
 /**
  * Factory function to generate a new pattern instance.
  *
  * @param string $pattern_name
  *   The name of the pattern.
+ * @param array $preset_values
+ *   An array of property/values to set on the new pattern.
  *
  * @return \Drupal\render_patterns\PatternInterface
  *   The pattern instance.
  *
  * @see \Drupal\render_patterns\PatternFactory::get
  */
-function render_patterns_get(string $pattern_name, array $data = []): PatternInterface {
+function render_patterns_get(string $pattern_name, array $preset_values = []): PatternInterface {
   try {
-    return \Drupal::service('render_patterns.factory')
-      ->get($pattern_name, $data);
+    $candidates = array_map(function ($name) {
+      return 'Drupal\\render_patterns\\Pattern\\' . $name;
+    }, array_unique([
+      $pattern_name . 'RenderPattern',
+      $pattern_name,
+    ]));
+
+    foreach ($candidates as $class_name) {
+      if (class_exists($class_name)) {
+        $pattern = $class_name::create(\Drupal::getContainer());
+        if ($preset_values) {
+          foreach ($preset_values as $key => $value) {
+            $pattern->{$key} = $value;
+          }
+        }
+        return $pattern;
+      }
+    }
+
+    throw new MissingPatternException($candidates);
+
   }
   catch (\Exception $exception) {
     $message = t('In render pattern %name: @message', [
