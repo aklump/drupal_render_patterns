@@ -50,11 +50,13 @@ class PatternAutoloader implements EventSubscriberInterface {
         $weight = 0;
         $info = $module_handler
           ->invoke($implementing_name, 'render_patterns_info');
-        if (!isset($info['weight'])) {
-          $weight = \Drupal::config('core.extension')
-            ->get('module.' . $implementing_name);
+        if ($info) {
+          if (!isset($info['weight'])) {
+            $weight = \Drupal::config('core.extension')
+              ->get('module.' . $implementing_name);
+          }
+          $patterns_info[$implementing_name] = $info + ['weight' => $weight];
         }
-        $patterns_info[$implementing_name] = $info + ['weight' => $weight];
       }
 
       // Allow others to alter this list.
