@@ -2,6 +2,7 @@
 
 ## 8.x-1.1-rc1 2019-03-15T16:16, aklump
 
+* You must declare all properties as protected or in the schema.
 * Change all your patterns to extend `\Drupal\render_patterns\Pattern` instead of `RenderPatternsPattern`.
 * You must add the PHP 7 typehints for: `build` and `render` per `\Drupal\render_patterns\PatternInterface`.
 * It is no longer recommended to suffix your classes with `RenderPattern`.

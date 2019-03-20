@@ -8,7 +8,6 @@ use JsonSchema\Constraints\Constraint;
 use JsonSchema\Validator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
  * Represents a Pattern object class.
  *
@@ -112,7 +111,7 @@ abstract class Pattern implements PatternInterface {
     // Verify $key is allowed to be set.
     $allowed_properties = array_keys($schema['properties'] ?? []);
     if (!in_array($key, $allowed_properties)) {
-      throw new \InvalidArgumentException("\"$key\" is not an allowed property for " . static::class);
+      throw new PatternException(static::class, "\"$key\" is not an allowed property");
     }
 
     $data = (object) [
@@ -122,7 +121,13 @@ abstract class Pattern implements PatternInterface {
     // When validating a single key we have no concept of the dataset so, we
     // have to ignore the required part of the schema.
     unset($schema['required']);
-    $this->validator->validate($data, $schema, Constraint::CHECK_MODE_EXCEPTIONS);
+
+    try {
+      $this->validator->validate($data, $schema, Constraint::CHECK_MODE_EXCEPTIONS);
+    }
+    catch (\Exception $exception) {
+      throw new PatternException(static::class, "Property \"$key\", " . $exception->getMessage(), $exception);
+    }
   }
 
   /**
@@ -139,7 +144,11 @@ abstract class Pattern implements PatternInterface {
 
     // Determine the default because we don't have an overridden value.
     $default_method = "default__$key";
-    $default_value = $this->getSchema()['properties'][$key]['default'] ?? NULL;
+    $schema = $this->getSchema();
+    if (!isset($schema['properties'][$key]['type'])) {
+      throw new PatternException(static::class, "Incomplete schema for \"{$key}\".");
+    }
+    $default_value = $schema['properties'][$key]['default'] ?? $this->defaultByType($schema['properties'][$key]['type']);
     if (method_exists($this, $default_method)) {
       $default_value = $this->{$default_method}($default_value);
 
@@ -159,6 +168,38 @@ abstract class Pattern implements PatternInterface {
     }
 
     return $is_overridden ? $override_value : $default_value;
+  }
+
+  /**
+   * Return the default value based on declared type.
+   */
+  protected function defaultByType($type) {
+    $type = is_array($type) ? reset($type) : $type;
+    switch (strtolower($type)) {
+      case 'null':
+        return NULL;
+
+      case 'object':
+        return new \stdClass();
+
+      case 'array':
+        return [];
+
+      case 'boolean':
+        return FALSE;
+
+      case 'float':
+      case 'double':
+        return floatval(NULL);
+
+      case 'integer':
+        return 0;
+
+      case 'string':
+        return '';
+    }
+
+    return NULL;
   }
 
   /**
@@ -188,7 +229,7 @@ abstract class Pattern implements PatternInterface {
    */
   public function render(): string {
 
-    // TODO Explore the implications of render contexts with this.  May want to deprectate this method. 2019-03-16T10:11, aklump
+    // TODO Explore the implications of render contexts with this.  May want to deprectate this method. 2019-03-16T10:11, aklump.
     return \Drupal::service('renderer')->renderRoot($this->build());
   }
 

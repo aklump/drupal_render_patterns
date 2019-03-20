@@ -3,11 +3,6 @@
 namespace Drupal\render_patterns;
 
 /**
- * @file
- * Defines the PatternInterface class.
- */
-
-/**
  * Represents a Pattern object class.
  *
  * @brief The interface for all Pattern classes.
@@ -28,7 +23,8 @@ interface PatternInterface {
    * @return string
    *   The markup for this pattern instance.
    *
-   * @throws RuntimeException If unabled to render.
+   * @throws RuntimeException
+   *   If unabled to render.
    */
   public function render(): string;
 }

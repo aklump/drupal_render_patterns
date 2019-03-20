@@ -20,3 +20,27 @@ Validation is based on [JSON Schema](https://json-schema.org/latest/json-schema-
           'default' => 'h1',
         ],
       ];
+
+## `description` not comments
+
+Instead of commenting your code, add a `description` key to make a property note or descriptio.
+
+Wrong:
+
+    protected $properties = [
+      // Leave this null if the first batch is already loaded. For autoclick loading, set this to an integer total number to load.  The caller should most likely be checking $_GET for this value!!!
+      'load' => [
+        'type' => ['null', 'integer'],
+        'default' => NULL,
+      ],
+    ];
+
+Right:
+
+    protected $properties = [
+      'load' => [
+        'description' => 'Leave this null if the first batch is already loaded. For autoclick loading, set this to an integer total number to load.  The caller should most likely be checking $_GET for this value!!!',
+        'type' => ['null', 'integer'],
+        'default' => NULL,
+      ],
+    ];

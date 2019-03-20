@@ -9,6 +9,8 @@ use Drupal\render_patterns\Uncacheable;
 
 /**
  * @group render_patterns
+ * @SuppressWarnings(PHPMD.StaticAccess)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class PatternTest extends UnitTestBase {
 
@@ -65,11 +67,19 @@ class PatternTest extends UnitTestBase {
   }
 
   /**
-   * @expectedException JsonSchema\Exception\ValidationException
+   * @expectedException \Drupal\render_patterns\PatternException
    */
   public function testInvalidEnumThrows() {
     $obj = new BravoPattern(new Data());
     $obj->size = 'fish';
+  }
+
+  /**
+   * @expectedException \Drupal\render_patterns\PatternException
+   */
+  public function testLegacyDefaultsThrowsWhenBadTypeIsSet() {
+    $obj = new LegacyPattern(new Data());
+    $obj->breakfast = ['oatmeal'];
   }
 
   public function testSchemaPropertyIsRecognized() {
@@ -78,7 +88,7 @@ class PatternTest extends UnitTestBase {
   }
 
   /**
-   * @expectedException InvalidArgumentException
+   * @expectedException \Drupal\render_patterns\PatternException
    */
   public function testTryingToGetInvalidKeyThrows() {
     $this->obj->bogus = 'value';
@@ -108,14 +118,6 @@ class PatternTest extends UnitTestBase {
     $this->assertSame('Ernie', $this->obj->name);
   }
 
-  /**
-   * @expectedException JsonSchema\Exception\ValidationException
-   */
-  public function testLegacyDefaultsThrowsWhenBadTypeIsSet() {
-    $obj = new LegacyPattern(new Data());
-    $obj->breakfast = ['oatmeal'];
-  }
-
   public function testLegacyDefaultsMethodIsConvertedToSchemaForTypeValidation() {
     $obj = new LegacyPattern(new Data());
     $obj->breakfast = 'oatmeal';
@@ -131,6 +133,17 @@ class PatternTest extends UnitTestBase {
 
   public function testClassCanSetPublicProperties() {
     $this->assertSame('Grasslands', $this->obj->title);
+  }
+
+  public function testDefaultArrayTypeReturnsEmptyArrayWhenNoOverride() {
+    $this->assertSame([], $this->obj->list);
+    $this->assertInternalType('object', $this->obj->thing);
+    $this->assertSame(0, $this->obj->int);
+    $this->assertSame(FALSE, $this->obj->bool);
+    $this->assertSame(0.0, $this->obj->float);
+    $this->assertSame('', $this->obj->string);
+    $this->assertSame(NULL, $this->obj->null);
+    $this->assertSame(0, $this->obj->compound);
   }
 
 }
@@ -174,6 +187,9 @@ class AlphaPattern extends Pattern {
   public $title = 'Grasslands';
 
   protected $properties = [
+    'module' => [
+      'type' => 'string',
+    ],
     'name' => [
       'type' => 'string',
       'default' => 'Bert',
@@ -190,11 +206,41 @@ class AlphaPattern extends Pattern {
       'type' => 'string',
       'default' => '',
     ],
+
+    // These are tests to make sure defaults are based on type.
+    'list' => [
+      'type' => 'array',
+    ],
+    'thing' => [
+      'type' => 'object',
+    ],
+    'int' => [
+      'type' => 'integer',
+    ],
+    'bool' => [
+      'type' => 'boolean',
+    ],
+    'float' => [
+      'type' => 'float',
+    ],
+    'string' => [
+      'type' => 'string',
+    ],
+    'null' => [
+      'type' => 'null',
+    ],
+    'compound' => [
+      'type' => ['integer', 'string'],
+    ],
   ];
 
+  /**
+   * {@inheritdoc}
+   */
   public function build(): array {
     $build = ['#markup' => 'Hello World'];
     $this->ajaxWrap($build, 'copy');
+
     return $build;
   }
 
@@ -203,6 +249,7 @@ class AlphaPattern extends Pattern {
     if (empty($counter)) {
       $counter = $default;
     }
+
     return ++$counter;
   }
 

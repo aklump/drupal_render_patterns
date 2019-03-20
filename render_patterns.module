@@ -7,9 +7,10 @@
  */
 
 use Drupal\Core\Render\Markup;
+use Drupal\render_patterns\MissingPatternException;
+use Drupal\render_patterns\PatternException;
 use Drupal\render_patterns\PatternInterface;
 use Drupal\render_patterns\RenderPatternsMessage;
-use Drupal\render_patterns\MissingPatternException;
 
 /**
  * Factory function to generate a new pattern instance.
@@ -49,10 +50,13 @@ function render_patterns_get(string $pattern_name, array $preset_values = []): P
 
   }
   catch (\Exception $exception) {
-    $message = t('In render pattern %name: @message', [
-      '%name' => $pattern_name,
-      '@message' => $exception->getMessage(),
-    ])->__toString();
+    $message = $exception->getMessage();
+    if (!$exception instanceof PatternException) {
+      $message = t('%name: @message', [
+        '%name' => $pattern_name,
+        '@message' => $message,
+      ])->__toString();
+    }
     \Drupal::messenger()->addError(Markup::create($message));
     $pattern = new RenderPatternsMessage(data_api());
     $pattern->message = $message;
