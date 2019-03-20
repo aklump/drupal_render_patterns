@@ -1,11 +1,10 @@
 name = Render Patterns
 description = Encapsulate render arrays as PHP classes for reusability.
 package = Other
-version = 7.x-1.2-rc1
+version = 7.x-1.2-rc2
 core = 7.x
 php = 5.3
 author = aklump
-
 files[] = includes/RenderPatternsDSPattern.php
 files[] = includes/RenderPatternsMessage.php
 files[] = includes/RenderPatternsPattern.php
