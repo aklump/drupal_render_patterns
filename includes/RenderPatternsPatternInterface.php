@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Defines the PatternInterface class.
- */
 
 /**
  * Represents a Pattern object class.
@@ -12,18 +8,10 @@
 interface RenderPatternsPatternInterface {
 
   /**
-   * Return an array of default values.
-   *
-   * This is called only at instantiation.
+   * Return a render array.
    *
    * @return array
-   */
-  public static function defaults();
-
-  /**
-   * Return a render array
-   *
-   * @return [type] [description]
+   *   The render array representing this pattern.
    */
   public function build();
 
@@ -31,8 +19,11 @@ interface RenderPatternsPatternInterface {
    * Renders the build array using drupal_render().
    *
    * @return string
+   *   The markup for this pattern instance.
    *
-   * @throws RuntimeException If unabled to render.
+   * @throws RuntimeException
+   *   If unabled to render.
    */
   public function render();
+
 }

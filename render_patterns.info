@@ -5,8 +5,12 @@ version = 7.x-1.2-rc1
 core = 7.x
 php = 5.3
 author = aklump
-files[] = includes/RenderPatternsPatternInterface.php
-files[] = includes/RenderPatternsPattern.php
+
 files[] = includes/RenderPatternsDSPattern.php
+files[] = includes/RenderPatternsMessage.php
+files[] = includes/RenderPatternsPattern.php
+files[] = includes/RenderPatternsPatternException.php
+files[] = includes/RenderPatternsPatternInterface.php
+files[] = includes/RenderPatternsUncacheable.php
 
 dependencies[] = data_api

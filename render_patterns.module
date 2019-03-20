@@ -2,44 +2,57 @@
 /**
  * @file
  * Base file for the render_patterns module.
- *
- * @defgroup render_patterns Render Patterns
- * @{
  */
 
 /**
- * Future-proof factory function returns Pattern object.
+ * Factory function to generate a new pattern instance.
  *
- * In future versions, when namespacing is supported, this function will handle
- * the namespacing for you.  This provides a consisten api for this module to
- * simply use the eventual classname.
+ * @param string $pattern_name
+ *   The name of the pattern.
+ * @param array $preset_values
+ *   An array of property/values to set on the new pattern.
  *
- * In Drupal 7 Pattern classnames should end with RenderPattern, and that
- * suffix
- * may be omitted from the $pattern_name argument.
+ * @return \Drupal\render_patterns\PatternInterface
+ *   The pattern instance.
  *
- * @param  string $pattern_name Two options here:
- *                              - the full classname or,
- *                              - the full classname without the suffix
- *                              'RenderPattern'
- *
- * @return \RenderPatternsPatternInterface
- * @throws \Exception
+ * @see \Drupal\render_patterns\PatternFactory::get
  */
-function render_patterns_get($pattern_name) {
+function render_patterns_get($pattern_name, array $preset_values = []) {
   try {
-    if (!class_exists($pattern_name)) {
-      $pattern_name .= 'RenderPattern';
+    $candidates = array_unique([
+      $pattern_name . 'RenderPattern',
+      $pattern_name,
+    ]);
+
+    foreach ($candidates as $class_name) {
+      if (class_exists($class_name)) {
+        $pattern = $class_name::create(\Drupal::getContainer());
+        if ($preset_values) {
+          foreach ($preset_values as $key => $value) {
+            $pattern->{$key} = $value;
+          }
+        }
+
+        return $pattern;
+      }
     }
 
-    if (class_exists($pattern_name)) {
-      return new $pattern_name(data_api());
-    }
-    throw new \InvalidArgumentException("Class $pattern_name does not exist. Try clearing all caches?");
+    throw new MissingPatternException($candidates);
+
   }
-  catch (\Exception $e) {
-    watchdog_exception('render_pattern', $e);
-    throw $e;
+  catch (\Exception $exception) {
+    $message = $exception->getMessage();
+    if (!$exception instanceof RenderPatternsPatternException) {
+      $message = t('%name: @message', [
+        '%name' => $pattern_name,
+        '@message' => $message,
+      ]);
+    }
+    drupal_set_message($message, 'error');
+    $pattern = new RenderPatternsMessage(data_api());
+    $pattern->message = $message;
+
+    return $pattern;
   }
 }
 
