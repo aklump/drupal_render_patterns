@@ -46,6 +46,32 @@
     ],
   ];
 </code></pre>
+
+<h2><code>description</code> not comments</h2>
+
+<p>Instead of commenting your code, add a <code>description</code> key to make a property note or descriptio.</p>
+
+<p>Wrong:</p>
+
+<pre><code>protected $properties = [
+  // Leave this null if the first batch is already loaded. For autoclick loading, set this to an integer total number to load.  The caller should most likely be checking $_GET for this value!!!
+  'load' =&gt; [
+    'type' =&gt; ['null', 'integer'],
+    'default' =&gt; NULL,
+  ],
+];
+</code></pre>
+
+<p>Right:</p>
+
+<pre><code>protected $properties = [
+  'load' =&gt; [
+    'description' =&gt; 'Leave this null if the first batch is already loaded. For autoclick loading, set this to an integer total number to load.  The caller should most likely be checking $_GET for this value!!!',
+    'type' =&gt; ['null', 'integer'],
+    'default' =&gt; NULL,
+  ],
+];
+</code></pre>
 </section>
 
 <div class="search__results">
@@ -55,7 +81,7 @@
 <footer>
   <div class="pager"><a href="dependency-injection.html" class="prev dependency-injection">&laquo;Patterns and Dependency Injection</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="ROADMAP.html" class="next roadmap">Roadmap&raquo;</a></div>  
   <div id="footer-legaleeze">
-    <p class="legaleeze center">Version: 1.0 &bull; Last Updated: Sat, 16 Mar 2019 10:34:11 -0700</p>
+    <p class="legaleeze center">Version: 1.0 &bull; Last Updated: Tue, 19 Mar 2019 18:53:31 -0700</p>
   </div>
 </footer>
 
