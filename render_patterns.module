@@ -37,7 +37,7 @@ function render_patterns_get($pattern_name, array $preset_values = []) {
       }
     }
 
-    throw new MissingPatternException($candidates);
+    throw new RenderPatternsMissingPatternException($candidates);
 
   }
   catch (\Exception $exception) {

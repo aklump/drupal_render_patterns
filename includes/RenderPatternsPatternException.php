@@ -3,7 +3,7 @@
 /**
  * Throws when a pattern class is not found.
  */
-class RenderPatternsPatternException extends \Exception {
+class RenderPatternsPatternException extends Exception {
 
   /**
    * RenderPatternsInvalidPropertyException constructor.
