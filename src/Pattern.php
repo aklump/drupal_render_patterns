@@ -30,15 +30,6 @@ abstract class Pattern implements PatternInterface {
   use DataTrait;
 
   /**
-   * Holds the block for the BEM.
-   *
-   * @var string
-   *
-   * @see ::cl
-   */
-  public $module = '';
-
-  /**
    * Holds overridden values.
    *
    * @var array
@@ -248,6 +239,9 @@ abstract class Pattern implements PatternInterface {
    * @deprecated This will be removed in a future version.
    */
   protected function cl($name = '', $isComponent = TRUE) {
+    if (!$this->module) {
+      throw new PatternException(static::class, "You must set \"module\" to use ::cl().");
+    }
     $names = is_array($name) ? $name : [$name];
     $glue = $isComponent ? '_' : '-';
     $classes = [];
