@@ -2,7 +2,8 @@
 
 namespace Drupal\Tests\render_patterns\Unit;
 
-use AKlump\DrupalTest\UnitTestBase;
+use AKlump\DrupalTest\Drupal7\UnitTestCase;
+use AKlump\PHPUnit\EasyMock;
 use Drupal\data_api\Data;
 use RenderPatternsPattern;
 use RenderPatternsUncacheable;
@@ -12,13 +13,13 @@ use RenderPatternsUncacheable;
  * @SuppressWarnings(PHPMD.StaticAccess)
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
-class RenderPatternsPatternTest extends UnitTestBase {
+class RenderPatternsPatternTest extends UnitTestCase {
 
   protected function getSchema() {
     return [
       'classToBeTested' => AlphaPattern::class,
       'classArgumentsMap' => [
-        'dataApiData' => [new Data(), self::VALUE],
+        'dataApiData' => [new Data(), EasyMock::VALUE],
       ],
     ];
   }
