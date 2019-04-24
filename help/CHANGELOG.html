@@ -1,0 +1,18 @@
+
+<h2>8.x-1.1-rc1 2019-03-15T16:16, aklump</h2>
+
+<ul>
+<li>You must declare all properties as protected or in the schema.</li>
+<li>Change all your patterns to extend <code>\Drupal\render_patterns\Pattern</code> instead of <code>RenderPatternsPattern</code>.</li>
+<li>You must add the PHP 7 typehints for: <code>build</code> and <code>render</code> per <code>\Drupal\render_patterns\PatternInterface</code>.</li>
+<li>It is no longer recommended to suffix your classes with <code>RenderPattern</code>.</li>
+<li>You may now pass an array of values as the second argument to <code>render_patterns_get</code> to set those properties on instantiation.</li>
+<li><code>public static defaults()</code> has been deprecated.  You should migrate to <code>class::$properties</code>.</li>
+<li>Added JSONSchema validation via <code>Pattern::$properties</code>.  Use it to define the property schema per <a href="https://json-schema.org/latest/json-schema-validation.html">JSON Schema format</a> for automatic validation.</li>
+</ul>
+
+<h2>7.x-1.1-rc5</h2>
+
+<ul>
+<li>BREAKING CHANGE: <code>defaults()</code> should now be a <code>public static</code> function.</li>
+</ul>

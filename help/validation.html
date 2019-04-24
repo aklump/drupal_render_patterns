@@ -1,0 +1,48 @@
+
+<p>Validation is based on <a href="https://json-schema.org/latest/json-schema-validation.html">JSON Schema</a>.  However we're not using JSON at all, but rather the <code>pattern::$properties</code> property on your class.  The API structured however follows JSON schema and you will build an array following those guidelines.  In most cases, <code>$properties</code> is the only key of the schema specification you will need to use.  However if you find some reason to need an entire schema, then set <code>pattern::$schema</code> instead and do not set <code>pattern::$properties</code>.  <strong>The <code>required</code> keys is ignored when validating a single key.</strong></p>
+
+<pre><code>  protected $properties = [
+    'title' =&gt; [
+      'type' =&gt; 'string',
+      'default' =&gt; 'Title Goes Here',
+    ],
+    'tag' =&gt; [
+      'type' =&gt; 'string',
+      'enum' =&gt; [
+        'h1',
+        'h2',
+        'h3',
+        'h4',
+        'h5',
+        'h6',
+      ],
+      'default' =&gt; 'h1',
+    ],
+  ];
+</code></pre>
+
+<h2><code>description</code> not comments</h2>
+
+<p>Instead of commenting your code, add a <code>description</code> key to make a property note or descriptio.</p>
+
+<p>Wrong:</p>
+
+<pre><code>protected $properties = [
+  // Leave this null if the first batch is already loaded. For autoclick loading, set this to an integer total number to load.  The caller should most likely be checking $_GET for this value!!!
+  'load' =&gt; [
+    'type' =&gt; ['null', 'integer'],
+    'default' =&gt; NULL,
+  ],
+];
+</code></pre>
+
+<p>Right:</p>
+
+<pre><code>protected $properties = [
+  'load' =&gt; [
+    'description' =&gt; 'Leave this null if the first batch is already loaded. For autoclick loading, set this to an integer total number to load.  The caller should most likely be checking $_GET for this value!!!',
+    'type' =&gt; ['null', 'integer'],
+    'default' =&gt; NULL,
+  ],
+];
+</code></pre>

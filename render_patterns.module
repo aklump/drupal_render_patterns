@@ -35,7 +35,7 @@ function render_patterns_get(string $pattern_name, array $preset_values = []): P
     ]));
 
     foreach ($candidates as $class_name) {
-      if (class_exists($class_name, FALSE)) {
+      if (class_exists($class_name)) {
         $pattern = $class_name::create(\Drupal::getContainer());
         if ($preset_values) {
           foreach ($preset_values as $key => $value) {

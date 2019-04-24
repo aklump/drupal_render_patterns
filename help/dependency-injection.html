@@ -1,0 +1,12 @@
+
+<p>Patterns that need services from the service container should implement the <code>create</code> method and a custom <code>__construct</code>.</p>
+
+<pre><code>  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container-&gt;get('data_api')
+    );
+  }
+</code></pre>

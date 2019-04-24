@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Object Properties</title>
+  <link href="search/tipuesearch.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+</head>
+
+<body class="page--properties">
+<header>
+  <div class="pager"><a href="README.html" class="prev README">&laquo;Drupal Module: Render Patterns</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="dependency-injection.html" class="next dependency-injection">Patterns and Dependency Injection&raquo;</a></div></header>
+<section class="sub-header">
+  <div class="breadcrumbs"><a href="index.html">Index</a>
+         &raquo
+      </div>      <div class="search__wrapper">
+  <form action="search--results.html">
+    <input type="text" class="search-input" name="q" id="tipue_search_input" autocomplete="off" required>
+  </form>
+</div>
+  </section>
+
+
+<h1>Object Properties</h1>
+
+<section>
+
+<p>A render pattern encapsulates the render array into a class and then exposes only those properties that may change across instances.</p>
+
+<p>To set a property you have two options: set the value when you instantiate the pattern, or set it on the pattern directly.</p>
+
+<p>In these examples I have defined a render pattern as a PHP class <code>Drupal\render_pattern\Pattern\Headline</code> located in my default theme's folder as <em>{theme dir}/render&#95;patterns/Headline.php</em>.</p>
+
+<h2>Set the Property on Instantiation</h2>
+
+<pre><code>$pattern = render_patterns_get('Headline', [
+  'title' =&gt; 'Hello World',
+]);
+</code></pre>
+
+<h2>Set the Property Directly</h2>
+
+<pre><code>$pattern = render_patterns_get('Headline')
+$pattern-&gt;title = 'Hello World';
+</code></pre>
+
+<h2>Using <code>isset</code> and <code>unset</code></h2>
+
+<p>These work a little different, but logically.</p>
+
+<p><code>isset($pattern-&gt;title)</code> will return <code>true</code> if the title has been overridden.  It will return <code>false</code>, even if the default value has a value.  So it's really answering the question, "Does title have a value other than it's default?"</p>
+
+<p><code>unset($pattern-&gt;title)</code> will remove the override value and put it back in the default state.  Incidentally this will cause a <code>default__*</code> method, whose return value was previously cached, to be called again.</p>
+
+<h2>Property Validation</h2>
+
+<p>When you try to set a property value, it will be validated against the schema.  If the property is not allowed, or it's value is not valid then an error situation occurs.</p>
+
+<p>How this manifests depends on when you're setting the property.  On instantion, as in the first example, the error is handled by drupal error messages; as well as the object returned is a markup render array with the error message.  So if you render the object, you will also see the error message.</p>
+
+<p>When setting directly, i.e., <code>$pattern-&gt;title</code>, an exception is thrown.</p>
+
+<h2>Default Values</h2>
+
+<p>Default values will only be returned for a property if the property has not been set.  Once set, the default mechanisms as described below do not apply.</p>
+
+<p><strong>Default values, whether static or dynamic, are not validated per the schema, so be careful.</strong></p>
+
+<h3>Static Default Values</h3>
+
+<p>Set your default values in <code>pattern::$properties</code>, using the key <code>default</code>, something like this:</p>
+
+<pre><code>protected $properties = [
+  'title' =&gt; [
+    'type' =&gt; 'string',
+    'default' =&gt; 'Title Goes Here',
+  ],
+];      
+</code></pre>
+
+<h3>Dynamic Default Values</h3>
+
+<p>If you need to provide non-static values for a property, use a method that follows the naming convention of <code>default_{property}</code>, e.g. <code>default__title</code>.  This method will only be called if a value for the property has not been overridden.  It will be called once or always dependent upon how you return your value.</p>
+
+<p>If the method returns the same value every time, it is cacheable.  Just return the default value like this.  The method will only be called the first time the property is accessed.</p>
+
+<pre><code>  protected function default__tag() {
+    return 'h3';
+  }
+</code></pre>
+
+<p>If the method must do runtime calculation and may return a different default value each time, then it is not cacheable.  You must wrap the return value in <code>Uncacheable::value()</code> as seen in the example below.  This is an obvious use case because you want <code>$pattern-&gt;now</code> to always return the current time.</p>
+
+<pre><code>  protected function default__now() {
+    return Uncacheable::value(time());
+  }        
+</code></pre>
+
+<h2>Get the Value</h2>
+
+<p>Getting the value goes through a series of steps.  Refer to this flowchart for more info:</p>
+
+<p><img src="images/getter.png" alt="getter" /></p>
+
+<h3><code>get__* methods</code></h3>
+
+<p>These are expensive so only use if needed.  Try to use <code>default__*</code> first, if possible.  You should only use a <code>get__*</code> method if you need to process the value every time it is retrieved.  The return value is never cached.  This may be removed in a future version pending performance impact analysis.</p>
+</section>
+
+<div class="search__results">
+  <div id="tipue_search_content"></div>
+</div>
+
+<footer>
+  <div class="pager"><a href="README.html" class="prev README">&laquo;Drupal Module: Render Patterns</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="dependency-injection.html" class="next dependency-injection">Patterns and Dependency Injection&raquo;</a></div>  
+  <div id="footer-legaleeze">
+    <p class="legaleeze center">Version: 1.0 &bull; Last Updated: Wed, 20 Mar 2019 17:54:22 -0700</p>
+  </div>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="search/tipuesearch_content.js"></script>
+  <script src="search/tipuesearch_set.js"></script>
+  <script src="search/tipuesearch.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#tipue_search_input').tipuesearch()
+    })
+  </script>
+<script src="js/core.js"></script>
+</body>
+</html>
+
