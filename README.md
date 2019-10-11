@@ -65,6 +65,7 @@ However, where this module really takes over is when you have a pattern that com
 1. Create a render pattern by creating a file called `THEME/render_patterns/ListOfThumbs.php` the contents of which are:
 
         <?php
+        namespace Drupal\render_patterns\pattern;
         
         use \Drupal\render_patterns\Pattern;
         
