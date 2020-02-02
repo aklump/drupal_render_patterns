@@ -3,6 +3,7 @@
 namespace Drupal\render_patterns;
 
 use AKlump\Data\DataInterface;
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\data_api\DataTrait;
 use JsonSchema\Constraints\Constraint;
 use JsonSchema\Validator;
@@ -25,7 +26,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @link https://json-schema.org/latest/json-schema-validation.html
  */
-abstract class Pattern implements PatternInterface {
+abstract class Pattern implements PatternInterface, ContainerInjectionInterface {
 
   use DataTrait;
 
