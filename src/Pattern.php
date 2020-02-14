@@ -103,7 +103,7 @@ abstract class Pattern implements PatternInterface, ContainerInjectionInterface 
     // Verify $key is allowed to be set.
     $allowed_properties = array_keys($schema['properties'] ?? []);
     if (!in_array($key, $allowed_properties)) {
-      throw new \RuntimeException(static::class, "\"$key\" is not an allowed property");
+      throw new PatternException(get_class($this), "\"$key\" is not an allowed property");
     }
 
     $data = (object) [
@@ -118,7 +118,7 @@ abstract class Pattern implements PatternInterface, ContainerInjectionInterface 
       $this->validator->validate($data, $schema, Constraint::CHECK_MODE_EXCEPTIONS);
     }
     catch (\Exception $exception) {
-      throw new \RuntimeException(static::class, "Property \"$key\", " . $exception->getMessage(), $exception);
+      throw new PatternException(get_class($this), "Property \"$key\", " . $exception->getMessage(), $exception);
     }
   }
 
@@ -138,7 +138,7 @@ abstract class Pattern implements PatternInterface, ContainerInjectionInterface 
     $default_method = "default__$key";
     $schema = $this->getSchema();
     if (!isset($schema['properties'][$key]['type'])) {
-      throw new \RuntimeException(static::class, "Incomplete schema for \"{$key}\".");
+      throw new PatternException(get_class($this), "Incomplete schema for \"{$key}\".");
     }
     $default_value = $schema['properties'][$key]['default'] ?? $this->defaultByType($schema['properties'][$key]['type']);
     if (method_exists($this, $default_method)) {
@@ -241,7 +241,7 @@ abstract class Pattern implements PatternInterface, ContainerInjectionInterface 
    */
   protected function cl($name = '', $isComponent = TRUE) {
     if (!$this->module) {
-      throw new \RuntimeException(static::class, "You must set \"module\" to use ::cl().");
+      throw new PatternException(get_class($this), "You must set \"module\" to use ::cl().");
     }
     $names = is_array($name) ? $name : [$name];
     $glue = $isComponent ? '_' : '-';
