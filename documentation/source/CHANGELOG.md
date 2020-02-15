@@ -1,5 +1,15 @@
 # Changelog
 
+## [8.2.0] - 2020-02-14
+
+### Changed
+
+- Switched to semantic versioning.
+  
+### Removed
+
+- Dependency on [drupal:data_api](https://www.drupal.org/project/data_api).  See documentation _update-v2.md_ on how to handle this breaking change.
+
 ## 8.x-1.1-rc1 2019-03-15T16:16, aklump
 
 * You must declare all properties as protected or in the schema.

@@ -1,10 +1,8 @@
 name: 'Render Patterns'
-description: 'Encapsulate render arrays as PHP classes for reusability.'
-package: Other
+description: 'Encapsulate render arrays as PHP classes for re-usability.'
+package: In the Loft Studios
 core: 8.x
-version: 8.x-1.1-rc7
+version: 8.x-1.1.7
 php: 7.1
 author: aklump
-dependencies:
-  data_api: 'drupal:data_api'
 type: module

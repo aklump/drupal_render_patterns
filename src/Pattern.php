@@ -2,9 +2,7 @@
 
 namespace Drupal\render_patterns;
 
-use AKlump\Data\DataInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-use Drupal\data_api\DataTrait;
 use JsonSchema\Constraints\Constraint;
 use JsonSchema\Validator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -27,8 +25,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @link https://json-schema.org/latest/json-schema-validation.html
  */
 abstract class Pattern implements PatternInterface, ContainerInjectionInterface {
-
-  use DataTrait;
 
   /**
    * Holds overridden values.
@@ -70,18 +66,12 @@ abstract class Pattern implements PatternInterface, ContainerInjectionInterface 
   /**
    * RenderPatternsPattern constructor.
    */
-  public function __construct(DataInterface $dataApiData) {
-    $this->setDataApiData($dataApiData);
+  public function __construct() {
     $this->validator = new Validator();
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('data_api')
-    );
+    return new static();
   }
 
   /**

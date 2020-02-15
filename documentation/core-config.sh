@@ -56,5 +56,5 @@ README = '../README.txt ../README.md'
 #pre_hooks = "pre_compile.sh pre_compile.php"
 #post_hooks = "post_compile.sh post_compile.php"
 
-version_file = "../*.info"
+version_file = "../*.info.yml"
 website_dir = "../docs"
