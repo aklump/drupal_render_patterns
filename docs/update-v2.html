@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Update V2</title>
+  <link href="search/tipuesearch.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+</head>
+
+<body class="page--update-v2">
+<header>
+  <div class="pager"><a href="ROADMAP.html" class="prev ROADMAP">&laquo;Roadmap</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="arrays.html" class="next arrays">Using arrays when implementing a pattern&raquo;</a></div></header>
+<section class="sub-header">
+  <div class="breadcrumbs"><a href="index.html">Index</a>
+         &raquo
+      </div>      <div class="search__wrapper">
+  <form action="search--results.html">
+    <input type="text" class="search-input" name="q" id="tipue_search_input" autocomplete="off" required>
+  </form>
+</div>
+  </section>
+
+
+<h1>Update V2</h1>
+
+<section><h2>Update your Render Patterns</h2>
+
+<p>You patterns will be broken when you update to 2.x, here's what you need to do.</p>
+
+<ol>
+<li><p>Search for any overridden constructors...</p>
+
+<pre><code>public function __construct(
+  Data $data,
+  BlockRepositoryInterface $block_repository,
+) {
+  $this-&gt;blockRepository = $block_repository;
+  parent::__construct($data);
+}
+
+public static function create(ContainerInterface $container) {
+  return new static(
+    $container-&gt;get('data_api'),
+    $container-&gt;get('block.repository'),
+  );
+}
+</code></pre></li>
+<li><p>... and remove the references to <code>\AKlump\Data\Data</code>; so the above becomes the following...</p>
+
+<pre><code>public function __construct(
+  BlockRepositoryInterface $block_repository,
+  EntityTypeManagerInterface $entity_type_manager
+) {
+  $this-&gt;blockRepository = $block_repository;
+  parent::__construct();
+}
+
+public static function create(ContainerInterface $container) {
+  return new static(
+    $container-&gt;get('block.repository'),
+  );
+}  
+</code></pre></li>
+</ol>
+
+<h2>To maintain compatibility</h2>
+
+<p>You can create a interim class like the following and update all your render patterns to extend it, rather than <code>\Drupal\render_patterns\Pattern</code>.</p>
+
+<pre><code>    &lt;?php
+
+    namespace Drupal\my_module;
+
+    use AKlump\Data\DataInterface;
+    use Drupal\data_api\DataTrait;
+    use Drupal\render_patterns\Pattern;
+    use Symfony\Component\DependencyInjection\ContainerInterface;
+
+    /**
+     * An example showing how to maintain backwards compatibility.
+     */
+    abstract class PatternWithData extends Pattern {
+
+      use DataTrait;
+
+      /**
+       * RenderPatternsPattern constructor.
+       */
+      public function __construct(DataInterface $dataApiData) {
+        $this-&gt;setDataApiData($dataApiData);
+        parent::__construct();
+      }
+
+      /**
+       * {@inheritdoc}
+       */
+      public static function create(ContainerInterface $container) {
+        return new static(
+          $container-&gt;get('data_api')
+        );
+      }
+
+    }
+</code></pre>
+</section>
+
+<div class="search__results">
+  <div id="tipue_search_content"></div>
+</div>
+
+<footer>
+  <div class="pager"><a href="ROADMAP.html" class="prev ROADMAP">&laquo;Roadmap</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="arrays.html" class="next arrays">Using arrays when implementing a pattern&raquo;</a></div>  
+  <div id="footer-legaleeze">
+    <p class="legaleeze center">Version: 8.x-1.1.8 &bull; Last Updated: Fri, 14 Feb 2020 18:45:48 -0800</p>
+  </div>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="search/tipuesearch_content.js"></script>
+  <script src="search/tipuesearch_set.js"></script>
+  <script src="search/tipuesearch.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#tipue_search_input').tipuesearch()
+    })
+  </script>
+<script src="js/core.js"></script>
+</body>
+</html>
+
