@@ -160,11 +160,11 @@ Design Decisions/Rationale
 
    With heavy use of render arrays in writing complex themes, I found that
    I was repeating the same render array configurations throughtout
-   several locations: preprocessors, tpls, and display suite layouts. This
-   became a headache to keep in sync if such a pattern changed. I thought,
-   I need something like a theme declaration that returns a renderable
-   array not a string. This module is my answer implementing a write once,
-   use often approach for these "render patterns".
+   several locations: preprocessors, tpls. This became a headache to keep
+   in sync if such a pattern changed. I thought, I need something like a
+   theme declaration that returns a renderable array not a string. This
+   module is my answer implementing a write once, use often approach for
+   these "render patterns".
 
 Contact
 
