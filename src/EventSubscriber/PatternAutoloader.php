@@ -15,15 +15,9 @@ class PatternAutoloader implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
-
-    // It appears to me KernelEvents::CONTROLLER_ARGUMENTS is the last event
-    // where we can pull this off before the classes are not available to our
-    // view builders.
     return [
-      KernelEvents::CONTROLLER_ARGUMENTS => [
-        'registerPatternClasses',
-        0,
-      ],
+      // We have to load our classes before anything else so they are available.
+      KernelEvents::REQUEST => ['registerPatternClasses', 1000],
     ];
   }
 
