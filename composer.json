@@ -1,4 +1,12 @@
 {
+    "name": "drupal/render-patterns",
+    "type": "private",
+    "authors": [
+        {
+            "name": "aklump",
+            "email": "sourcecode@intheloftstudios.com"
+        }
+    ],
     "license": "GPL-2.0-or-later",
     "require": {
         "justinrainbow/json-schema": "^5.2",

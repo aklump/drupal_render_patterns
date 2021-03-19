@@ -14,7 +14,22 @@ You may also visit the [project page](http://www.drupal.org/project/render_patte
 
 ## Installation
 
-1. Install as usual, see [http://drupal.org/node/70151](http://drupal.org/node/70151) for further information.
+1. Download this module to _web/modules/custom/render_patterns_.
+1. Add the following to the application's _composer.json_ above web root.
+
+    ```json
+    {
+      "repositories": [
+        {
+          "type": "path",
+          "url": "web/modules/custom/render_patterns"
+        }
+      ]
+    }
+    ```
+
+1. Now run `composer require drupal/render-patterns`
+1. Enable this module.
 
 ## Configuration
 
