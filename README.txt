@@ -22,8 +22,20 @@ Requirements
 
 Installation
 
-    1. Install as usual, see [4]http://drupal.org/node/70151 for further
-       information.
+    1. Download this module to web/modules/custom/render_patterns.
+    2. Add the following to the application's composer.json above web
+       root.
+{
+  "repositories": [
+    {
+      "type": "path",
+      "url": "web/modules/custom/render_patterns"
+    }
+  ]
+}
+
+    3. Now run composer require drupal/render-patterns
+    4. Enable this module.
 
 Configuration
 
@@ -173,12 +185,11 @@ Contact
      * PO Box 29294 Bellingham, WA 98228-1294
      * skype: intheloftstudios
      * d.o: aklump
-     * [5]http://www.InTheLoftStudios.com
+     * [4]http://www.InTheLoftStudios.com
 
 References
 
    1. mailto:sourcecode@intheloftstudios.com
    2. https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
    3. http://www.drupal.org/project/render_patterns
-   4. http://drupal.org/node/70151
-   5. http://www.InTheLoftStudios.com/
+   4. http://www.InTheLoftStudios.com/

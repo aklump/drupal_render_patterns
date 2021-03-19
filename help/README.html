@@ -16,7 +16,20 @@
 <h2>Installation</h2>
 
 <ol>
-<li>Install as usual, see <a href="http://drupal.org/node/70151">http://drupal.org/node/70151</a> for further information.</li>
+<li>Download this module to <em>web/modules/custom/render_patterns</em>.</li>
+<li><p>Add the following to the application's <em>composer.json</em> above web root.</p>
+
+<pre><code class="json">{
+  "repositories": [
+    {
+      "type": "path",
+      "url": "web/modules/custom/render_patterns"
+    }
+  ]
+}
+</code></pre></li>
+<li><p>Now run <code>composer require drupal/render-patterns</code></p></li>
+<li>Enable this module.</li>
 </ol>
 
 <h2>Configuration</h2>

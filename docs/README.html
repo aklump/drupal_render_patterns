@@ -42,7 +42,20 @@
 <h2>Installation</h2>
 
 <ol>
-<li>Install as usual, see <a href="http://drupal.org/node/70151">http://drupal.org/node/70151</a> for further information.</li>
+<li>Download this module to <em>web/modules/custom/render_patterns</em>.</li>
+<li><p>Add the following to the application's <em>composer.json</em> above web root.</p>
+
+<pre><code class="json">{
+  "repositories": [
+    {
+      "type": "path",
+      "url": "web/modules/custom/render_patterns"
+    }
+  ]
+}
+</code></pre></li>
+<li><p>Now run <code>composer require drupal/render-patterns</code></p></li>
+<li>Enable this module.</li>
 </ol>
 
 <h2>Configuration</h2>
@@ -193,7 +206,7 @@ print drupal_render($obj-&gt;build());
 <footer>
   <div class="pager"><a href="CHANGELOG.html" class="prev CHANGELOG">&laquo;Changelog</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="properties.html" class="next properties">Object Properties&raquo;</a></div>  
   <div id="footer-legaleeze">
-    <p class="legaleeze center">Version: 8.x-2.0.2 &bull; Last Updated: Sun, 27 Sep 2020 11:20:08 -0700</p>
+    <p class="legaleeze center">Version: 8.x-2.0.3 &bull; Last Updated: Thu, 18 Mar 2021 19:25:36 -0700</p>
   </div>
 </footer>
 
