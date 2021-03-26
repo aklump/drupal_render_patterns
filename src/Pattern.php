@@ -105,10 +105,50 @@ abstract class Pattern implements PatternInterface, ContainerInjectionInterface 
     unset($schema['required']);
 
     try {
+      $this->validateFullyQualifiedNamedConstraints($data, $schema);
       $this->validator->validate($data, $schema, Constraint::CHECK_MODE_EXCEPTIONS);
     }
     catch (\Exception $exception) {
       throw new PatternException(get_class($this), "Property \"$key\", " . $exception->getMessage(), $exception);
+    }
+  }
+
+  /**
+   * Validate objects where the schema asks for a FQN.
+   *
+   * @param array $data
+   *   The data to check against the schema.
+   * @param array $schema
+   *   The JSON schema.
+   *
+   * @throws \Drupal\render_patterns\PatternException
+   *   When objects do not validate according to their FQN.
+   */
+  private function validateFullyQualifiedNamedConstraints(array $data, array &$schema) {
+    foreach ($data as $key => $datum) {
+      if (!is_object($datum)) {
+        continue;
+      }
+      $type =& $schema['properties'][$key]['type'];
+      if ($type === 'object') {
+        continue;
+      }
+      $type = is_string($type) ? [$type] : $type;
+      $is_valid = FALSE;
+      foreach ($type as $fqcn) {
+        $is_valid = $fqcn === 'object' || $datum instanceof $fqcn;
+        if ($is_valid) {
+          break;
+        }
+      }
+
+      if (!$is_valid) {
+        throw new PatternException(get_class($this), sprintf('Property "%s" is not an instance of %s.', $key, $type));
+      }
+
+      // Replace FQN with native 'object' so JSON validator will process
+      // correctly since it doesn't handle FQN objects.
+      $type = 'object';
     }
   }
 

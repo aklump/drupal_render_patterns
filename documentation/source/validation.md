@@ -1,6 +1,14 @@
 # Property Validation
 
-Validation is based on [JSON Schema](https://json-schema.org/latest/json-schema-validation.html).  However we're not using JSON at all, but rather the `pattern::$properties` property on your class.  The API structured however follows JSON schema and you will build an array following those guidelines.  In most cases, `$properties` is the only key of the schema specification you will need to use.  However if you find some reason to need an entire schema, then set `pattern::$schema` instead and do not set `pattern::$properties`.  **The `required` keys is ignored when validating a single key.**
+Validation is based
+on [JSON Schema](https://json-schema.org/latest/json-schema-validation.html).
+However we're not using JSON at all, but rather the `pattern::$properties`
+property on your class. The API structured however follows JSON schema and you
+will build an array following those guidelines. In most cases, `$properties` is
+the only key of the schema specification you will need to use. However if you
+find some reason to need an entire schema, then set `pattern::$schema` instead
+and do not set `pattern::$properties`.  **The `required` keys is ignored when
+validating a single key.**
 
       protected $properties = [
         'title' => [
@@ -21,9 +29,35 @@ Validation is based on [JSON Schema](https://json-schema.org/latest/json-schema-
         ],
       ];
 
+## Validation of Objects Using FQN
+
+This module allows an extra layer of validation for objects, above what JSON
+schema provides. You may indicate a fully-qualified classname to validate
+against a given class or interface, such as in the following example. _Notice
+type can be a string or an array of strings._
+
+```php
+class Foo extends Pattern {
+
+  protected $properties = [
+    'account' => [
+      'type' => '\Drupal\Core\Session\AccountInterface',
+    ],
+    'entity' => [
+      'type' => [
+        \Drupal\block_content\BlockContentInterface::class,
+        \Drupal\node\NodeInterface::class,
+      ],
+    ],
+  ];
+
+}
+```
+
 ## `description` not comments
 
-Instead of commenting your code, add a `description` key to make a property note or descriptio.
+Instead of commenting your code, add a `description` key to make a property note
+or description.
 
 Wrong:
 

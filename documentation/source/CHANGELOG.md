@@ -1,5 +1,9 @@
 # Changelog
 
+## [8.x-2.1] - 2021-03-26
+### Added
+- Support for validation of objects by FQN.  See docs for usage example.
+  
 ## [8.x-2.0] - 2020-02-14
 
 ### Changed
