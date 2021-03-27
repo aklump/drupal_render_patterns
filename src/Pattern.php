@@ -2,6 +2,7 @@
 
 namespace Drupal\render_patterns;
 
+use Drupal\Component\Utility\DefaultValue;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use JsonSchema\Constraints\Constraint;
 use JsonSchema\Validator;
@@ -116,7 +117,7 @@ abstract class Pattern implements PatternInterface, ContainerInjectionInterface 
   /**
    * Validate objects where the schema asks for a FQN.
    *
-   * @param array $data
+   * @param object $data
    *   The data to check against the schema.
    * @param array $schema
    *   The JSON schema.
@@ -124,7 +125,7 @@ abstract class Pattern implements PatternInterface, ContainerInjectionInterface 
    * @throws \Drupal\render_patterns\PatternException
    *   When objects do not validate according to their FQN.
    */
-  private function validateFullyQualifiedNamedConstraints(array $data, array &$schema) {
+  private function validateFullyQualifiedNamedConstraints(object $data, array &$schema) {
     foreach ($data as $key => $datum) {
       if (!is_object($datum)) {
         continue;
@@ -165,13 +166,29 @@ abstract class Pattern implements PatternInterface, ContainerInjectionInterface 
     }
 
     // Determine the default because we don't have an overridden value.
-    $default_method = "default__$key";
+    $default_method = "default__{$key}";
     $schema = $this->getSchema();
     if (!isset($schema['properties'][$key]['type'])) {
       throw new PatternException(get_class($this), "Incomplete schema for \"{$key}\".");
     }
-    $default_value = $schema['properties'][$key]['default'] ?? $this->defaultByType($schema['properties'][$key]['type']);
-    if (method_exists($this, $default_method)) {
+
+    $has_default_value_method = method_exists($this, $default_method);
+    if (array_key_exists('default', $schema['properties'][$key])) {
+      $default_value = $schema['properties'][$key]['default'];
+    }
+    else {
+      try {
+        $default_value = $this->defaultByType($key, $schema['properties'][$key]['type']);
+      }
+      catch (\Exception $exception) {
+        if (!$has_default_value_method) {
+          throw $exception;
+        }
+        $default_value = NULL;
+      }
+    }
+
+    if ($has_default_value_method) {
       $default_value = $this->{$default_method}($default_value);
 
       // Cache this value if we are asked.
@@ -195,33 +212,19 @@ abstract class Pattern implements PatternInterface, ContainerInjectionInterface 
   /**
    * Return the default value based on declared type.
    */
-  protected function defaultByType($type) {
-    $type = is_array($type) ? reset($type) : $type;
-    switch (strtolower($type)) {
-      case 'null':
-        return NULL;
+  private function defaultByType($key, $type) {
+    try {
+      if (is_array($type)) {
+        $type = array_first($type);
+      }
 
-      case 'object':
-        return new \stdClass();
-
-      case 'array':
-        return [];
-
-      case 'boolean':
-        return FALSE;
-
-      case 'float':
-      case 'double':
-        return floatval(NULL);
-
-      case 'integer':
-        return 0;
-
-      case 'string':
-        return '';
+      return DefaultValue::get($type);
     }
-
-    return NULL;
+    catch (\Exception $exception) {
+      $called_class = get_called_class();
+      $how_to_fix = sprintf("You must provide a runtime value, a default value as %s::\$properties['%s']['default'], or implement %s::default__%s().", $called_class, $key, $called_class, $key);
+      throw new PatternException(get_class($this), $exception->getMessage() . ' ' . $how_to_fix);
+    }
   }
 
   /**
