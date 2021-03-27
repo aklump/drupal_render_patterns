@@ -7,3 +7,4 @@ LICENSE.txt
 /documentation/README.md
 /help/outline.merge.json
 /vendor/
+composer.lock
