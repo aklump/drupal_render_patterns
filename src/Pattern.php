@@ -130,13 +130,13 @@ abstract class Pattern implements PatternInterface, ContainerInjectionInterface 
       if (!is_object($datum)) {
         continue;
       }
-      $type =& $schema['properties'][$key]['type'];
-      if ($type === 'object') {
+      $schema_type =& $schema['properties'][$key]['type'];
+      if ($schema_type === 'object') {
         continue;
       }
-      $type = is_string($type) ? [$type] : $type;
+      $valid_types = is_string($schema_type) ? [$schema_type] : $schema_type;
       $is_valid = FALSE;
-      foreach ($type as $fqcn) {
+      foreach ($valid_types as $fqcn) {
         $is_valid = $fqcn === 'object' || $datum instanceof $fqcn;
         if ($is_valid) {
           break;
@@ -144,12 +144,18 @@ abstract class Pattern implements PatternInterface, ContainerInjectionInterface 
       }
 
       if (!$is_valid) {
-        throw new PatternException(get_class($this), sprintf('Property "%s" is not an instance of %s.', $key, $type));
+        $actual_type = get_class($datum);
+        if (is_array($schema_type)) {
+          throw new PatternException(get_class($this), sprintf('Property "%s", (%s), is not any instance of: %s.', $key, $actual_type, implode(',', $schema_type)));
+        }
+        else {
+          throw new PatternException(get_class($this), sprintf('Property "%s", ($s), is not an instance of %s.', $key, $actual_type, $schema_type));
+        }
       }
 
       // Replace FQN with native 'object' so JSON validator will process
       // correctly since it doesn't handle FQN objects.
-      $type = 'object';
+      $schema_type = 'object';
     }
   }
 
