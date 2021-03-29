@@ -140,10 +140,21 @@ abstract class Pattern implements PatternInterface {
           throw new PatternException(get_class($this), sprintf('Property "%s", ($s), is not an instance of %s.', $key, $actual_type, $schema_type));
         }
       }
+    }
 
-      // Replace FQN with native 'object' so JSON validator will process
-      // correctly since it doesn't handle FQN objects.
-      $schema_type = 'object';
+    // Replace FQN with native 'object' so JSON validator will process
+    // correctly since it doesn't handle FQN objects.
+    $replace = function ($type) {
+      return strstr($type, '\\') ? 'object' : $type;
+    };
+    foreach ($data as $key => $datum) {
+      $schema_type =& $schema['properties'][$key]['type'];
+      if (is_array($schema_type)) {
+        $schema_type = array_map($replace, $schema_type);
+      }
+      else {
+        $schema_type = $replace($schema_type);
+      }
     }
   }
 
@@ -159,7 +170,7 @@ abstract class Pattern implements PatternInterface {
       return $override_value;
     }
 
-    // Determine the default because we don't have an overridden value.
+    // Determine the default because we don't have an overridden value .
     $default_method = "default__{$key}";
     $schema = $this->getSchema();
     if (!isset($schema['properties'][$key]['type'])) {
