@@ -11,11 +11,6 @@ use JsonSchema\Validator;
  *
  * @brief An abstract base for all Pattern classes.
  *
- * Be sure to define either of the following on your child class, an array
- *   which is a JSON schema.
- *  - class::$properties
- *  - class::$schema
- *
  * You may use the following API methods to influence property values; see
  *   documentation for more info.
  * - protected function default__{property_name}()
@@ -26,57 +21,51 @@ use JsonSchema\Validator;
 abstract class Pattern implements PatternInterface {
 
   /**
-   * Holds overridden values.
-   *
    * @var array
    */
-  protected $overrides = [];
-
-  /**
-   * The hardcoded schema array.
-   *
-   * Most likely, you will use $this->properties instead.
-   *
-   * @var array
-   */
-  protected $schema;
+  private static $schema = [];
 
   /**
    * The hardcoded properties section of the JSON schema.
    *
    * @var array
+   *
+   * @deprecated Use ::getProperties() instead.
    */
   protected $properties;
+
+  /**
+   * Holds overridden values.
+   *
+   * @var array
+   */
+  private $overrides = [];
 
   /**
    * An instance of the JSON schema validator.
    *
    * @var \JsonSchema\Validator
    */
-  protected $validator;
+  private $validator;
 
   /**
-   * Holds cached data.
-   *
-   * @var array
-   */
-  protected $cache;
-
-  /**
-   * Verify that $key can be set as $value.
+   * Verify the $value of $key fits in the schema definition.
    *
    * @param string $key
-   *   The property.
+   *   The property name as defined in ::getProperties().
    * @param mixed $value
-   *   The value to be set on the property.
+   *   The value to validate for the property $key.
    *
-   * @throws \InvalidArgumentException
-   *   If the $key is not an allowed property.
-   * @throws \JsonSchema\Exception\ValidationException
-   *   If the schema validation fails.
+   * @throws \Drupal\render_patterns\PatternException
+   *   If $key does not appear in the schema properties.
+   *   If $value does not pass the schema validation.
    */
-  protected function validateKeyValueBySchema(string $key, $value): void {
+  private function validateKeyValueBySchema(string $key, $value): void {
     $schema = $this->getSchema();
+
+    // When validating a single key we have no concept of the dataset so, we
+    // have to remove the required part of the schema, so it doesn't throw.
+    unset($schema['required']);
 
     // Verify $key is allowed to be set.
     $allowed_properties = array_keys($schema['properties'] ?? []);
@@ -84,21 +73,15 @@ abstract class Pattern implements PatternInterface {
       throw new PatternException(get_class($this), "\"$key\" is not an allowed property");
     }
 
-    $data = (object) [
-      $key => $value,
-    ];
-
-    // When validating a single key we have no concept of the dataset so, we
-    // have to ignore the required part of the schema.
-    unset($schema['required']);
-
     try {
+      $data = (object) [$key => $value];
       $this->validateFullyQualifiedNamedConstraints($data, $schema);
       $this->validator = $this->validator ?? new Validator();
       $this->validator->validate($data, $schema, Constraint::CHECK_MODE_EXCEPTIONS);
     }
     catch (\Exception $exception) {
-      throw new PatternException(get_class($this), sprintf("Invalid type \"%s\" for property \"%s\" >>> %s", gettype($value), $key, $exception->getMessage()), $exception);
+      $message = sprintf("Invalid type \"%s\" for property \"%s\" >>> %s", gettype($value), $key, $exception->getMessage());
+      throw new PatternException(get_class($this), $message, $exception);
     }
   }
 
@@ -158,10 +141,13 @@ abstract class Pattern implements PatternInterface {
     }
   }
 
+  private function __gett($key) {
+  }
+
   /**
    * {@inheritdoc}
    */
-  public function __get($key) {
+  private function __get($key) {
     $get_method = "get__$key";
     $has_dynamic_method = method_exists($this, $get_method);
     $is_overridden = array_key_exists($key, $this->overrides);
@@ -183,7 +169,7 @@ abstract class Pattern implements PatternInterface {
     }
     else {
       try {
-        $default_value = $this->defaultByType($key, $schema['properties'][$key]['type']);
+        $default_value = $this->getPropertyDefaultValue($key, $schema['properties'][$key]['type']);
       }
       catch (\Exception $exception) {
         if (!$has_default_value_method) {
@@ -217,7 +203,7 @@ abstract class Pattern implements PatternInterface {
   /**
    * Return the default value based on declared type.
    */
-  private function defaultByType($key, $type) {
+  private function getPropertyDefaultValue($key, $type) {
     try {
       if (is_array($type)) {
         $type = array_first($type);
@@ -235,7 +221,7 @@ abstract class Pattern implements PatternInterface {
   /**
    * {@inheritdoc}
    */
-  public function __set($key, $value) {
+  private function __set($key, $value) {
     $this->validateKeyValueBySchema($key, $value);
     $this->overrides[$key] = $value;
   }
@@ -243,14 +229,14 @@ abstract class Pattern implements PatternInterface {
   /**
    * {@inheritdoc}
    */
-  public function __isset($key) {
-    return array_key_exists($key, $this->overrides);
+  private function __isset($key) {
+    return ($this->overrides[$key] ?? NULL) !== NULL;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function __unset($key) {
+  private function __unset($key) {
     unset($this->overrides[$key]);
   }
 
@@ -260,123 +246,37 @@ abstract class Pattern implements PatternInterface {
   public function render(): string {
 
     // TODO Explore the implications of render contexts with this.  May want to deprectate this method. 2019-03-16T10:11, aklump.
-    return \Drupal::service('renderer')->renderRoot($this->build());
+    $build = $this->build();
+
+    return \Drupal::service('renderer')->renderRoot($build);
   }
 
   /**
-   * Return a SMACSS [cl]ass name based on $this->module.
-   *
-   * @param string|array $name
-   *   If this is an array, each element will be converted to a class.
-   * @param bool $isComponent
-   *   If it's not a component (base__thing) then it's a style (base--style).
-   *   This determines the character used to glue the $name to the module.
-   *
-   * @return string
-   *   The classname
-   *
-   * @deprecated This will be removed in a future version.
+   * {@inheritdoc}
    */
-  protected function cl($name = '', $isComponent = TRUE) {
-    if (!$this->module) {
-      throw new PatternException(get_class($this), "You must set \"module\" to use ::cl().");
-    }
-    $names = is_array($name) ? $name : [$name];
-    $glue = $isComponent ? '_' : '-';
-    $classes = [];
-    foreach ($names as $name) {
-      $classes[] = $this->module . ($name ? str_repeat($glue, 2) . $name : '');
-    }
+  protected function getProperties() {
 
-    return implode(' ', $classes);
+    // To support the deprecated pattern, which will eventually be removed.
+    return $this->properties || [];
   }
 
   /**
-   * Adds an ajax content wrapper around $element.
+   * Return the schema definition.
    *
-   * @param array $element
-   *   The element to be wrapped.
-   * @param string $name
-   *   The name of the element, used for ::cl().
-   */
-  protected function ajaxWrap(array &$element, string $name): void {
-    $category = $this->cl($name);
-    $class = $category . '__ajax-content';
-    $ajax = [
-      'content' => [
-        0 => [
-          '#prefix' => '<div class="' . $class . '">',
-          '#suffix' => '</div>',
-        ],
-        '#role' => 'content',
-        '#selector' => ".$class",
-        '#class' => $class,
-      ],
-    ];
-
-    $temp = $ajax['content'][0];
-    $temp[] = $element;
-    $temp['#ajax_elements'] = $ajax;
-    $element = $temp;
-  }
-
-  /**
-   * Use this instead of drupal_get_form when inserting forms during build().
-   *
-   * This will prevent an odd ajax error that will submit the form twice when
-   * building during an ajax response.  Essentially, if you try to build a
-   * form when $_POST has a value, then the form appears as if it's already
-   * been submitted.
-   *
-   * @param string $form_id
-   *   The form id.
-   *
-   * @return array
-   *   The form build array.
-   */
-  protected function getForm(string $form_id): array {
-    // TODO This has not been ported to D8 yet.
-    $args = func_get_args();
-    $stash = $_POST;
-    $_POST = [];
-    $form = call_user_func_array('drupal_get_form', $args);
-    $_POST = $stash;
-
-    return $form;
-  }
-
-  /**
-   * Return the schema to use for validation or processing.
-   *
-   * This will be read in from $this->properties or $this->schema.
+   * To alter the schema you should override this method in your final pattern
+   * class.
    *
    * @return array
    *   The schema for this render pattern.
    */
-  protected function getSchema(): array {
-    if (empty($this->cache['schema'])) {
-      $this->cache['schema'] = [];
-      if (!empty($this->schema)) {
-        $this->cache['schema'] = $this->schema;
-      }
-
-      elseif (!empty($this->properties)) {
-        $this->cache['schema'] = ['properties' => $this->properties];
-      }
-
-      // Support the legacy method ::defaults().
-      elseif (method_exists($this, 'defaults')) {
-        $this->cache['schema']['properties'] = [];
-        foreach ($this->defaults() as $key => $default) {
-          $this->cache['schema']['properties'][$key] = [
-            'type' => gettype($default),
-            'default' => $default,
-          ];
-        }
-      }
+  public function getSchema(): array {
+    if (empty(self::$schema)) {
+      self::$schema = [
+        'properties' => $this->getProperties(),
+      ];
     }
 
-    return $this->cache['schema'];
+    return self::$schema;
   }
 
 }

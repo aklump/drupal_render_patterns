@@ -3,7 +3,7 @@
 namespace Drupal\render_patterns;
 
 /**
- * Throws when a pattern class is not found.
+ * Throws when a pattern cannot be handled.
  */
 class PatternException extends \Exception {
 

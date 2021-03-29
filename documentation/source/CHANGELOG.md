@@ -1,35 +1,64 @@
 # Changelog
 
-## [8.x-2.1.1] - 2021-03-29
+## [8.x-3.0] - 2021-03-29
+
 ### Added
+
 - Pattern classes should be declared `final`.
-  
+
 ### Changed
-- It is no longer necessary to call `parent::__construct()` when using `\Drupal\Core\DependencyInjection\ContainerInjectionInterface` in your patterns.
-  
+
+- It is no longer necessary to call `parent::__construct()` when
+  using `\Drupal\Core\DependencyInjection\ContainerInjectionInterface` in your
+  patterns.
+- Testing a pattern property with isset() will now return FALSE if the
+  overridden value is NULL.
+
+### Removed
+
+- `::cl()` has been removed. Try `\Drupal\front_end_components\BemTrait`
+  instead.
+- `::ajaxWrap()`
+- `::getForm()`
+- `::defaults()`
+
+### Deprecated
+
+- `$this->properties`.  You should migrate to `::getProperties()`.
+
 ## [8.x-2.1] - 2021-03-26
+
 ### Added
-- Support for validation of objects by FQN.  See docs for usage example.
-  
+
+- Support for validation of objects by FQN. See docs for usage example.
+
 ## [8.x-2.0] - 2020-02-14
 
 ### Changed
 
 - Switched to semantic versioning.
-  
+
 ### Removed
 
-- Dependency on [drupal:data_api](https://www.drupal.org/project/data_api).  See documentation _update-v2.md_ on how to handle this breaking change.
+- Dependency on [drupal:data_api](https://www.drupal.org/project/data_api). See
+  documentation _update-v2.md_ on how to handle this breaking change.
 
 ## 8.x-1.1-rc1 2019-03-15T16:16, aklump
 
 * You must declare all properties as protected or in the schema.
-* Change all your patterns to extend `\Drupal\render_patterns\Pattern` instead of `RenderPatternsPattern`.
-* You must add the PHP 7 typehints for: `build` and `render` per `\Drupal\render_patterns\PatternInterface`.
+* Change all your patterns to extend `\Drupal\render_patterns\Pattern` instead
+  of `RenderPatternsPattern`.
+* You must add the PHP 7 typehints for: `build` and `render`
+  per `\Drupal\render_patterns\PatternInterface`.
 * It is no longer recommended to suffix your classes with `RenderPattern`.
-* You may now pass an array of values as the second argument to `render_patterns_get` to set those properties on instantiation.
-* `public static defaults()` has been deprecated.  You should migrate to `class::$properties`.
-* Added JSONSchema validation via `Pattern::$properties`.  Use it to define the property schema per [JSON Schema format](https://json-schema.org/latest/json-schema-validation.html) for automatic validation.
+* You may now pass an array of values as the second argument
+  to `render_patterns_get` to set those properties on instantiation.
+* `public static defaults()` has been deprecated. You should migrate
+  to `class::$properties`.
+* Added JSONSchema validation via `Pattern::$properties`. Use it to define the
+  property schema
+  per [JSON Schema format](https://json-schema.org/latest/json-schema-validation.html)
+  for automatic validation.
 
 ## 7.x-1.1-rc5
 

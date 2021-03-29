@@ -24,23 +24,6 @@ class PatternTest extends UnitTestCase {
     ];
   }
 
-  public function testAjaxWrapAddsCorrectMarkup() {
-    $this->obj->module = 'blog';
-    $build = $this->obj->build();
-
-    $data = $build['#ajax_elements']['content'];
-    $this->assertSame('blog__copy__ajax-content', $data['#class']);
-    $this->assertSame('content', $data['#role']);
-    $this->assertSame('.blog__copy__ajax-content', $data['#selector']);
-    $this->assertSame('<div class="blog__copy__ajax-content">', $data[0]['#prefix']);
-    $this->assertSame('</div>', $data[0]['#suffix']);
-
-    $this->assertSame('<div class="blog__copy__ajax-content">', $build['#prefix']);
-    $this->assertSame('</div>', $build['#suffix']);
-
-    $this->assertSame('Hello World', $build[0]['#markup']);
-  }
-
   public function testIssetAndUnsetWorksAsExpected() {
     $this->assertFalse(isset($this->obj->name));
     $this->assertSame('Bert', $this->obj->name);
@@ -239,8 +222,7 @@ class AlphaPattern extends Pattern {
    * {@inheritdoc}
    */
   public function build(): array {
-    $build = ['#markup' => 'Hello World'];
-    $this->ajaxWrap($build, 'copy');
+    return['#markup' => 'Hello World'];
 
     return $build;
   }

@@ -10,6 +10,14 @@ namespace Drupal\render_patterns;
 interface PatternInterface {
 
   /**
+   * Define the properties.
+   *
+   * @return array
+   *   Defines the properties schema for this pattern.
+   */
+  public static function getProperties(): array;
+
+  /**
    * Return a render array.
    *
    * @return array
@@ -24,7 +32,7 @@ interface PatternInterface {
    *   The markup for this pattern instance.
    *
    * @throws RuntimeException
-   *   If unabled to render.
+   *   If unable to render.
    */
   public function render(): string;
 }
