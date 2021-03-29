@@ -6,6 +6,7 @@
  *
  */
 
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\render_patterns\MissingPatternException;
 use Drupal\render_patterns\PatternException;
@@ -35,7 +36,12 @@ function render_patterns_get(string $pattern_name, array $preset_values = []): P
 
     foreach ($candidates as $class_name) {
       if (class_exists($class_name)) {
-        $pattern = $class_name::create(\Drupal::getContainer());
+        if (in_array(ContainerInjectionInterface::class, class_implements($class_name))) {
+          $pattern = $class_name::create(\Drupal::getContainer());
+        }
+        else {
+          $pattern = new $class_name();
+        }
         if ($preset_values) {
           foreach ($preset_values as $key => $value) {
             $pattern->{$key} = $value;
@@ -47,7 +53,6 @@ function render_patterns_get(string $pattern_name, array $preset_values = []): P
     }
 
     throw new MissingPatternException($candidates);
-
   }
   catch (\Exception $exception) {
     $message = $exception->getMessage();

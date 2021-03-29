@@ -3,10 +3,8 @@
 namespace Drupal\render_patterns;
 
 use Drupal\Component\Utility\DefaultValue;
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use JsonSchema\Constraints\Constraint;
 use JsonSchema\Validator;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Represents a Pattern object class.
@@ -25,7 +23,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @link https://json-schema.org/latest/json-schema-validation.html
  */
-abstract class Pattern implements PatternInterface, ContainerInjectionInterface {
+abstract class Pattern implements PatternInterface {
 
   /**
    * Holds overridden values.
@@ -65,17 +63,6 @@ abstract class Pattern implements PatternInterface, ContainerInjectionInterface 
   protected $cache;
 
   /**
-   * RenderPatternsPattern constructor.
-   */
-  public function __construct() {
-    $this->validator = new Validator();
-  }
-
-  public static function create(ContainerInterface $container) {
-    return new static();
-  }
-
-  /**
    * Verify that $key can be set as $value.
    *
    * @param string $key
@@ -107,10 +94,11 @@ abstract class Pattern implements PatternInterface, ContainerInjectionInterface 
 
     try {
       $this->validateFullyQualifiedNamedConstraints($data, $schema);
+      $this->validator = $this->validator ?? new Validator();
       $this->validator->validate($data, $schema, Constraint::CHECK_MODE_EXCEPTIONS);
     }
     catch (\Exception $exception) {
-      throw new PatternException(get_class($this), "Property \"$key\", " . $exception->getMessage(), $exception);
+      throw new PatternException(get_class($this), sprintf("Invalid type \"%s\" for property \"%s\" >>> %s", gettype($value), $key, $exception->getMessage()), $exception);
     }
   }
 

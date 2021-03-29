@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.x-2.1.1] - 2021-03-29
+### Added
+- Pattern classes should be declared `final`.
+  
+### Changed
+- It is no longer necessary to call `parent::__construct()` when using `\Drupal\Core\DependencyInjection\ContainerInjectionInterface` in your patterns.
+  
 ## [8.x-2.1] - 2021-03-26
 ### Added
 - Support for validation of objects by FQN.  See docs for usage example.
