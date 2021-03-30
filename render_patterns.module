@@ -6,7 +6,6 @@
  *
  */
 
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\render_patterns\MissingPatternException;
 use Drupal\render_patterns\PatternException;
@@ -23,7 +22,9 @@ use Drupal\render_patterns\PatternInterface;
  * @return \Drupal\render_patterns\PatternInterface
  *   The pattern instance.
  *
- * @see \Drupal\render_patterns\PatternFactory::get
+ * @see \Drupal\render_patterns\Pattern::get
+ *
+ * @deprecated Use the ::get() method on the render pattern class.
  */
 function render_patterns_get(string $pattern_name, array $preset_values = []): PatternInterface {
   try {
@@ -36,19 +37,7 @@ function render_patterns_get(string $pattern_name, array $preset_values = []): P
 
     foreach ($candidates as $class_name) {
       if (class_exists($class_name)) {
-        if (in_array(ContainerInjectionInterface::class, class_implements($class_name))) {
-          $pattern = $class_name::create(\Drupal::getContainer());
-        }
-        else {
-          $pattern = new $class_name();
-        }
-        if ($preset_values) {
-          foreach ($preset_values as $key => $value) {
-            $pattern->{$key} = $value;
-          }
-        }
-
-        return $pattern;
+        return $class_name::get($preset_values);
       }
     }
 
@@ -75,7 +64,7 @@ function render_patterns_get(string $pattern_name, array $preset_values = []): P
  */
 function render_patterns_render_patterns_info() {
   $config = \Drupal::service('config.factory')->get('system.theme');
-  if (($theme_folder = \Drupal::root() . '/' . drupal_get_path('theme', $config->get('default')) . '/render_patterns')
+  if (($theme_folder = \Drupal::root() . '/' . drupal_get_path('theme', $config->get('default')) . '/src/render_patterns')
     && is_dir($theme_folder)) {
     return [
       'directory' => $theme_folder,

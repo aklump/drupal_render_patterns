@@ -3,6 +3,7 @@
 namespace Drupal\render_patterns;
 
 use Drupal\Component\Utility\DefaultValue;
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use JsonSchema\Constraints\Constraint;
 use JsonSchema\Validator;
 
@@ -21,32 +22,107 @@ use JsonSchema\Validator;
 abstract class Pattern implements PatternInterface {
 
   /**
-   * @var array
-   */
-  private static $schema = [];
-
-  /**
-   * The hardcoded properties section of the JSON schema.
-   *
-   * @var array
-   *
-   * @deprecated Use ::getProperties() instead.
-   */
-  protected $properties;
-
-  /**
    * Holds overridden values.
    *
    * @var array
    */
-  private $overrides = [];
+  private $values = [];
 
   /**
-   * An instance of the JSON schema validator.
-   *
-   * @var \JsonSchema\Validator
+   * @var array
    */
-  private $validator;
+  private $schema = [];
+
+  /**
+   * Return the schema definition.
+   *
+   * To alter the schema you should override this method in your final pattern
+   * class.
+   *
+   * @return array
+   *   The schema for this render pattern.
+   */
+  public function getSchema(): array {
+    if (empty($this->schema)) {
+      $this->schema = [
+        'properties' => $this->getProperties(),
+      ];
+
+      // If the schema does not define the default value, then we will smart
+      // guess it based on the property type.
+      foreach ($this->schema['properties'] as $property => &$definition) {
+
+        // Handle the "default" key.
+        if (!array_key_exists('default', $definition)) {
+          if (empty($definition['type'])) {
+            throw new PatternException($this, 'Missing "type" for the property "$property_name".');
+          }
+          try {
+            if (is_array($definition['type'])) {
+              $definition['type'] = array_first($definition['type']);
+            }
+            $definition['default'] = DefaultValue::get($definition['type']);
+          }
+          catch (\Exception $exception) {
+            $definition['default'] = NULL;
+          }
+        }
+
+        // Handle the "alter" key, which is a callback to alter __get().
+
+        // If we have a dynamic method "get__foo" then call it.  This may be
+        // deprecated in the future for some other pattern.
+        $alter_method = "get__{$property}";
+        if (method_exists($this, $alter_method)) {
+          if (isset($definition['alter'])) {
+            throw new PatternException(static::class, sprintf('You have defined "alter" for the property "%s" AND you have defined the method "%s()";  you must pick one or the other.', $property, $alter_method));
+          }
+          $definition['alter'] = [$this, $alter_method];
+        }
+      }
+    }
+
+    return $this->schema;
+  }
+
+  /**
+   * Retrieve the property definitions.
+   *
+   * @return array
+   *   The property definitions.
+   */
+  abstract protected function getProperties(): array;
+
+  /**
+   * Magic getter for overloaded properties.
+   *
+   * @param $key
+   *
+   * @throws \Drupal\render_patterns\PatternException
+   */
+  public function __get($property) {
+    $properties = $this->getSchema()['properties'];
+
+    // If the value is NULL then we grab the default from the schema.
+    if (($this->values[$property] ?? NULL) === NULL) {
+      $this->values[$property] = $properties[$property]['default'];
+      if (is_callable($this->values[$property])) {
+        // Note: `$this` is available inside this callback.
+        $this->values[$property] = $this->values[$property]($property);
+      }
+    }
+
+    if (is_callable($properties[$property]['alter'] ?? FALSE)) {
+      $is_overridden = $this->values[$property] !== $properties[$property]['default'];
+      $this->values[$property] = $properties[$property]['alter'](
+        $this->values[$property],
+        $properties[$property]['default'],
+        $is_overridden
+      );
+    }
+
+    return $this->values[$property];
+  }
 
   /**
    * Verify the $value of $key fits in the schema definition.
@@ -76,8 +152,8 @@ abstract class Pattern implements PatternInterface {
     try {
       $data = (object) [$key => $value];
       $this->validateFullyQualifiedNamedConstraints($data, $schema);
-      $this->validator = $this->validator ?? new Validator();
-      $this->validator->validate($data, $schema, Constraint::CHECK_MODE_EXCEPTIONS);
+      $json_validator = new Validator();
+      $json_validator->validate($data, $schema, Constraint::CHECK_MODE_EXCEPTIONS);
     }
     catch (\Exception $exception) {
       $message = sprintf("Invalid type \"%s\" for property \"%s\" >>> %s", gettype($value), $key, $exception->getMessage());
@@ -141,142 +217,48 @@ abstract class Pattern implements PatternInterface {
     }
   }
 
-  private function __gett($key) {
+  /**
+   * {@inheritdoc}
+   */
+  public function __set($key, $value) {
+    $this->validateKeyValueBySchema($key, $value);
+    $this->values[$key] = $value;
   }
 
   /**
    * {@inheritdoc}
    */
-  private function __get($key) {
-    $get_method = "get__$key";
-    $has_dynamic_method = method_exists($this, $get_method);
-    $is_overridden = array_key_exists($key, $this->overrides);
-    $override_value = $this->overrides[$key] ?? NULL;
-    if (!$has_dynamic_method && $is_overridden) {
-      return $override_value;
-    }
+  public function __isset($key) {
+    return ($this->values[$key] ?? NULL) !== NULL;
+  }
 
-    // Determine the default because we don't have an overridden value .
-    $default_method = "default__{$key}";
-    $schema = $this->getSchema();
-    if (!isset($schema['properties'][$key]['type'])) {
-      throw new PatternException(get_class($this), "Incomplete schema for \"{$key}\".");
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function __unset($key) {
+    unset($this->values[$key]);
+  }
 
-    $has_default_value_method = method_exists($this, $default_method);
-    if (array_key_exists('default', $schema['properties'][$key])) {
-      $default_value = $schema['properties'][$key]['default'];
+  /**
+   * {@inheritdoc}
+   */
+  public static function get(array $values = []): PatternInterface {
+    if (in_array(ContainerInjectionInterface::class, class_implements(static::class))) {
+      $instance = static::create(\Drupal::getContainer());
     }
     else {
-      try {
-        $default_value = $this->getPropertyDefaultValue($key, $schema['properties'][$key]['type']);
-      }
-      catch (\Exception $exception) {
-        if (!$has_default_value_method) {
-          throw $exception;
-        }
-        $default_value = NULL;
-      }
+      $instance = new static();
+    }
+    foreach ($values as $key => $value) {
+
+      // We do this so that the pattern has a chance to provide the
+      // default values to us.  If we didn't do the magic getter, then we
+      // could get an exception when setting $key if NULL is not allowed.
+      $value = $value ?? $instance->{$key};
+      $instance->{$key} = $value;
     }
 
-    if ($has_default_value_method) {
-      $default_value = $this->{$default_method}($default_value);
-
-      // Cache this value if we are asked.
-      if ($default_value instanceof Uncacheable) {
-        $default_value = $default_value->value;
-      }
-      else {
-        // We should cache this value.
-        $this->overrides[$key] = $default_value;
-      }
-    }
-
-    // Check for a method on the class.
-    if ($has_dynamic_method) {
-      return $this->{$get_method}($override_value, $default_value, $is_overridden);
-    }
-
-    return $is_overridden ? $override_value : $default_value;
-  }
-
-  /**
-   * Return the default value based on declared type.
-   */
-  private function getPropertyDefaultValue($key, $type) {
-    try {
-      if (is_array($type)) {
-        $type = array_first($type);
-      }
-
-      return DefaultValue::get($type);
-    }
-    catch (\Exception $exception) {
-      $called_class = get_called_class();
-      $how_to_fix = sprintf("You must provide a runtime value, a default value as %s::\$properties['%s']['default'], or implement %s::default__%s().", $called_class, $key, $called_class, $key);
-      throw new PatternException(get_class($this), $exception->getMessage() . ' ' . $how_to_fix);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  private function __set($key, $value) {
-    $this->validateKeyValueBySchema($key, $value);
-    $this->overrides[$key] = $value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  private function __isset($key) {
-    return ($this->overrides[$key] ?? NULL) !== NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  private function __unset($key) {
-    unset($this->overrides[$key]);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function render(): string {
-
-    // TODO Explore the implications of render contexts with this.  May want to deprectate this method. 2019-03-16T10:11, aklump.
-    $build = $this->build();
-
-    return \Drupal::service('renderer')->renderRoot($build);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function getProperties() {
-
-    // To support the deprecated pattern, which will eventually be removed.
-    return $this->properties || [];
-  }
-
-  /**
-   * Return the schema definition.
-   *
-   * To alter the schema you should override this method in your final pattern
-   * class.
-   *
-   * @return array
-   *   The schema for this render pattern.
-   */
-  public function getSchema(): array {
-    if (empty(self::$schema)) {
-      self::$schema = [
-        'properties' => $this->getProperties(),
-      ];
-    }
-
-    return self::$schema;
+    return $instance;
   }
 
 }

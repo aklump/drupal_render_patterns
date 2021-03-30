@@ -10,12 +10,12 @@ namespace Drupal\render_patterns;
 interface PatternInterface {
 
   /**
-   * Define the properties.
+   * Retrieve a JSON schema for the pattern.
    *
    * @return array
-   *   Defines the properties schema for this pattern.
+   *   The JSON schema for this pattern.
    */
-  public static function getProperties(): array;
+  public function getSchema(): array;
 
   /**
    * Return a render array.
@@ -26,13 +26,14 @@ interface PatternInterface {
   public function build(): array;
 
   /**
-   * Renders the build array using drupal_render().
+   * Return a new instance with properties set.
    *
-   * @return string
-   *   The markup for this pattern instance.
+   * @param array $values
+   *   An array of property values.
    *
-   * @throws RuntimeException
-   *   If unable to render.
+   * @return \Drupal\render_patterns\PatternInterface
+   *   Self for chaining.
    */
-  public function render(): string;
+  public static function get(array $values = []): self;
+
 }
