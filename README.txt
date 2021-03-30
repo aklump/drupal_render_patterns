@@ -14,12 +14,6 @@ Summary
 
    You may also visit the [3]project page on Drupal.org.
 
-Requirements
-
-    1. A very basic understanding of php objects is needed to produce the
-       code used by this module. Most Drupal site builders will already be
-       familiar with this.
-
 Installation
 
     1. Download this module to web/modules/custom/render_patterns.
@@ -36,6 +30,8 @@ Installation
 
     3. Now run composer require drupal/render-patterns
     4. Enable this module.
+    5. Begin creating one or more render patterns in {active
+       theme}/src/render_patterns/.
 
 Usage
 
@@ -110,7 +106,7 @@ protected function getProperties(): array {
 Building The Render Array
 
    Most often you will follow this simple pattern:
-$renderable_array = render_patterns_get('MyReuseablePattern', [
+$renderable_array = \Drupal\render_patterns\Pattern\MyReuseablePattern::get([
   'entity' => $account,
   'ajaxContext' => ['foo' => 'bar'],
 ])->build();
@@ -120,7 +116,7 @@ Instance Property Modification
 
    For more complete situations you have the ability to modify properties
    on an instance if you do something like this:
-$pattern = render_patterns_get('MyReuseablePattern', [
+$pattern = \Drupal\render_patterns\Pattern\MyReuseablePattern::get([
   'entity' => $account,
   'ajaxContext' => ['foo' => 'bar'],
 ]);

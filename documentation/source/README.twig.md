@@ -26,6 +26,7 @@ You may also visit the [project page](http://www.drupal.org/project/render_patte
 
 1. Now run `composer require drupal/render-patterns`
 1. Enable this module.
+1. Begin creating one or more render patterns in _{active theme}/src/render_patterns/_.
 
 ## Usage
 

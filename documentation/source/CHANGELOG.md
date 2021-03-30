@@ -5,6 +5,9 @@
 ### Added
 
 - Pattern classes should be declared `final`.
+- The `::get()` method to replace `render_patterns_get()`.
+- Invalidate `\Drupal::cache('bootstrap')->get('render_patterns_list')` when
+  default theme changes.
 
 ### Changed
 
@@ -13,6 +16,7 @@
   patterns.
 - Testing a pattern property with isset() will now return FALSE if the
   overridden value is NULL.
+- Moved default theme render patterns directory from _{theme}/render_patterns_ to _{theme}/src/render_patterns/_  
 
 ### Removed
 
@@ -26,6 +30,7 @@
 ### Deprecated
 
 - `$this->properties`. You should migrate to `::getProperties()`.
+- `render_patterns_get()`. You should call `::get` on the pattern class itself.
 
 ## [8.x-2.1] - 2021-03-26
 

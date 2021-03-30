@@ -33,12 +33,6 @@
 
 <p>You may also visit the <a href="http://www.drupal.org/project/render_patterns">project page</a> on Drupal.org.</p>
 
-<h2>Requirements</h2>
-
-<ol>
-<li>A very basic understanding of php objects is needed to produce the code used by this module.  Most Drupal site builders will already be familiar with this.</li>
-</ol>
-
 <h2>Installation</h2>
 
 <ol>
@@ -56,6 +50,7 @@
 </code></pre></li>
 <li><p>Now run <code>composer require drupal/render-patterns</code></p></li>
 <li>Enable this module.</li>
+<li>Begin creating one or more render patterns in <em>{active theme}/src/render_patterns/</em>.</li>
 </ol>
 
 <h2>Usage</h2>
@@ -134,7 +129,7 @@ keys: <code>type, default, alter</code>.</p>
 
 <p>Most often you will follow this simple pattern:</p>
 
-<pre><code class="php">$renderable_array = render_patterns_get('MyReuseablePattern', [
+<pre><code class="php">$renderable_array = \Drupal\render_patterns\Pattern\MyReuseablePattern::get([
   'entity' =&gt; $account,
   'ajaxContext' =&gt; ['foo' =&gt; 'bar'],
 ])-&gt;build();
@@ -146,7 +141,7 @@ $html = \Drupal::service('renderer')-&gt;render($renderable_array);
 <p>For more complete situations you have the ability to modify properties on an
 instance if you do something like this:</p>
 
-<pre><code class="php">$pattern = render_patterns_get('MyReuseablePattern', [
+<pre><code class="php">$pattern = \Drupal\render_patterns\Pattern\MyReuseablePattern::get([
   'entity' =&gt; $account,
   'ajaxContext' =&gt; ['foo' =&gt; 'bar'],
 ]);
@@ -185,7 +180,7 @@ modifications for compatibility with Drupal.</p>
 <footer>
   <div class="pager"><a href="CHANGELOG.html" class="prev CHANGELOG">&laquo;Changelog</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="arrays.html" class="next arrays">Problems With Array Overloading&raquo;</a></div>  
   <div id="footer-legaleeze">
-    <p class="legaleeze center">Version: 8.x-2.1.0 &bull; Last Updated: Mon, 29 Mar 2021 20:08:42 -0700</p>
+    <p class="legaleeze center">Version: 1.0 &bull; Last Updated: Tue, 30 Mar 2021 13:25:13 -0700</p>
   </div>
 </footer>
 

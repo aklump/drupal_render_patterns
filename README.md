@@ -8,10 +8,6 @@ The _Render Patterns_ module allows you to encapsulate Drupal render arrays as c
 
 You may also visit the [project page](http://www.drupal.org/project/render_patterns) on Drupal.org.
 
-## Requirements
-
-1. A very basic understanding of php objects is needed to produce the code used by this module.  Most Drupal site builders will already be familiar with this.
-
 ## Installation
 
 1. Download this module to _web/modules/custom/render_patterns_.
@@ -30,6 +26,7 @@ You may also visit the [project page](http://www.drupal.org/project/render_patte
 
 1. Now run `composer require drupal/render-patterns`
 1. Enable this module.
+1. Begin creating one or more render patterns in _{active theme}/src/render_patterns/_.
 
 ## Usage
 
@@ -111,7 +108,7 @@ protected function getProperties(): array {
 Most often you will follow this simple pattern:
 
 ```php
-$renderable_array = render_patterns_get('MyReuseablePattern', [
+$renderable_array = \Drupal\render_patterns\Pattern\MyReuseablePattern::get([
   'entity' => $account,
   'ajaxContext' => ['foo' => 'bar'],
 ])->build();
@@ -124,7 +121,7 @@ For more complete situations you have the ability to modify properties on an
 instance if you do something like this:
 
 ```php
-$pattern = render_patterns_get('MyReuseablePattern', [
+$pattern = \Drupal\render_patterns\Pattern\MyReuseablePattern::get([
   'entity' => $account,
   'ajaxContext' => ['foo' => 'bar'],
 ]);

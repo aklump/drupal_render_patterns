@@ -4,22 +4,22 @@ Because of the internals of the `RenderPatternsPattern` class, and how the defau
 
 ## The problem: This will not work
 
-    $obj = render_patterns_get("ListOfThumbs");
+    $obj = \Drupal\render_patterns\Pattern\ListOfThumbs::get();
     $obj->images[] = 'public://do.jpg';
     $obj->images[] = 'public://re.jpg';
 
 ## Solution 1
 
-    $obj = render_patterns_get("ListOfThumbs");
-    $obj->images = array(
+    $obj = \Drupal\render_patterns\Pattern\ListOfThumbs::get();
+    $obj->images = [
       'public://do.jpg',
       'public://re.jpg',
-    );
+    ];
 
 ## Solution 2
 
-    $obj = render_patterns_get("ListOfThumbs");
-    $images = array();
+    $obj = \Drupal\render_patterns\Pattern\ListOfThumbs::get();
+    $images = [];
     $images[] = 'public://do.jpg';
     $images[] = 'public://re.jpg';
     $obj->images = $images;

@@ -5,6 +5,9 @@
 
 <ul>
 <li>Pattern classes should be declared <code>final</code>.</li>
+<li>The <code>::get()</code> method to replace <code>render_patterns_get()</code>.</li>
+<li>Invalidate <code>\Drupal::cache('bootstrap')-&gt;get('render_patterns_list')</code> when
+default theme changes.</li>
 </ul>
 
 <h3>Changed</h3>
@@ -15,6 +18,7 @@ using <code>\Drupal\Core\DependencyInjection\ContainerInjectionInterface</code> 
 patterns.</li>
 <li>Testing a pattern property with isset() will now return FALSE if the
 overridden value is NULL.</li>
+<li>Moved default theme render patterns directory from <em>{theme}/render_patterns</em> to <em>{theme}/src/render_patterns/</em></li>
 </ul>
 
 <h3>Removed</h3>
@@ -32,6 +36,7 @@ instead.</li>
 
 <ul>
 <li><code>$this-&gt;properties</code>. You should migrate to <code>::getProperties()</code>.</li>
+<li><code>render_patterns_get()</code>. You should call <code>::get</code> on the pattern class itself.</li>
 </ul>
 
 <h2>[8.x-2.1] - 2021-03-26</h2>

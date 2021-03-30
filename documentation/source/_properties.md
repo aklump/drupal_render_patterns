@@ -76,7 +76,7 @@ protected function getProperties(): array {
 Most often you will follow this simple pattern:
 
 ```php
-$renderable_array = render_patterns_get('MyReuseablePattern', [
+$renderable_array = \Drupal\render_patterns\Pattern\MyReuseablePattern::get([
   'entity' => $account,
   'ajaxContext' => ['foo' => 'bar'],
 ])->build();
@@ -89,7 +89,7 @@ For more complete situations you have the ability to modify properties on an
 instance if you do something like this:
 
 ```php
-$pattern = render_patterns_get('MyReuseablePattern', [
+$pattern = \Drupal\render_patterns\Pattern\MyReuseablePattern::get([
   'entity' => $account,
   'ajaxContext' => ['foo' => 'bar'],
 ]);

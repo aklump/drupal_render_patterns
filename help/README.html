@@ -7,12 +7,6 @@
 
 <p>You may also visit the <a href="http://www.drupal.org/project/render_patterns">project page</a> on Drupal.org.</p>
 
-<h2>Requirements</h2>
-
-<ol>
-<li>A very basic understanding of php objects is needed to produce the code used by this module.  Most Drupal site builders will already be familiar with this.</li>
-</ol>
-
 <h2>Installation</h2>
 
 <ol>
@@ -30,6 +24,7 @@
 </code></pre></li>
 <li><p>Now run <code>composer require drupal/render-patterns</code></p></li>
 <li>Enable this module.</li>
+<li>Begin creating one or more render patterns in <em>{active theme}/src/render_patterns/</em>.</li>
 </ol>
 
 <h2>Usage</h2>
@@ -108,7 +103,7 @@ keys: <code>type, default, alter</code>.</p>
 
 <p>Most often you will follow this simple pattern:</p>
 
-<pre><code class="php">$renderable_array = render_patterns_get('MyReuseablePattern', [
+<pre><code class="php">$renderable_array = \Drupal\render_patterns\Pattern\MyReuseablePattern::get([
   'entity' =&gt; $account,
   'ajaxContext' =&gt; ['foo' =&gt; 'bar'],
 ])-&gt;build();
@@ -120,7 +115,7 @@ $html = \Drupal::service('renderer')-&gt;render($renderable_array);
 <p>For more complete situations you have the ability to modify properties on an
 instance if you do something like this:</p>
 
-<pre><code class="php">$pattern = render_patterns_get('MyReuseablePattern', [
+<pre><code class="php">$pattern = \Drupal\render_patterns\Pattern\MyReuseablePattern::get([
   'entity' =&gt; $account,
   'ajaxContext' =&gt; ['foo' =&gt; 'bar'],
 ]);
