@@ -31,127 +31,118 @@ You may also visit the [project page](http://www.drupal.org/project/render_patte
 1. Now run `composer require drupal/render-patterns`
 1. Enable this module.
 
-## Configuration
+## Usage
 
-There is nothing to configure aside from creating your classes as shown below.  Advanced help will reveal more documentation if you enable it.
+# Pattern Properties
 
-## Suggested Use
+The "render pattern" is meant to encapsulate common render array situations. The
+pattern is a class with a `build()` method. As shown immediately below, nothing
+changes across implementations. This may not always be practical, so...
 
-This probably should not be used as a one-to-one replacement for a render array based on a single theme function as this just adds a layer of abstraction and complexity.  It would be more straitforward to just create a render array directly.  
+```php
+namespace Drupal\render_patterns\Pattern;
 
-And if you are not repeating the render array, you should also consider just creating the render array directly.
+final MyReuseablePattern extends Pattern {
 
-However, where this module really takes over is when you have a pattern that combines multiple render arrays and is repeated.  The following example tries to unveil why this module can be so helpful.  One solution would be to create functions that take arguments and return render arrays, but I think this approach is cleaner and easier to maintain.
+  public function build(): array {
+    return ['#markup' => 'I am reusable text.'];
+  }
+  
+  ...
+  
+}
+```
 
-## How you implement
+...the interface defines the `getProperties` method, which exposes any number of
+configurable properties that will influence the build. This method returns an
+array of _property names_, each defining itself with the following
+keys: `type, default, alter`.
 
-    <?php
-    $render_array = render_patterns_get("ListOfThumbs", [
-      'images' => [
-         'public://sun.jpg',
-         'public://moon.jpg',
-         'public://stars.jpg',
-      ]
-    ])->build();
+```php
+protected function getProperties(): array {
+  return [
+    'account' => [
 
-## What you get in `$render_array`
+      // This must be an instance of this class.
+      'type' => \Drupal\Core\Session\AccountInterface::class,
 
-    Array
-    (
-        [#theme] => item_list
-        [#type] => ul
-        [#items] => Array
-            (
-                [0] => <img src="http://localhost/sites/default/files/styles/thumb/public/sun.jpg" alt="" />
-                [1] => <img src="http://localhost/sites/default/files/styles/thumb/public/moon.jpg" alt="" />
-                [2] => <img src="http://localhost/sites/default/files/styles/thumb/public/stars.jpg" alt="" />
-            )
+      // If the value is NULL, ::default() will be called.  This will only be
+      // called if the value is NULL, so generally speaking this is called
+      // once.  Note that any callable can be used so you do NOT need to use
+      // an anonymous function here, but instead could reference a method on
+      // this class or elsewhere; and the callback receives the property name
+      // as the argument.
+      'default' => function () {
+        return $this->currentUser;
+      },
 
-        [#attributes] => Array
-            (
-                [class] => list-of-thumbs
-            )
+      // This optional key can be used to modify the value before it's returned
+      // by the magic getter.  This is always called, each time the code calls
+      // $this->account.
+      'alter' => function ($value, $default, $is_overridden) {
+        // TODO You may do something here to alter the property value.
+      },
+    ],
 
-    )
+    // In this example you see that two types entities are allowed.
+    'entity' => [
+      'type' => [
+        \Drupal\node\NodeInterface::class,
+        \Drupal\user\UserInterface::class,
+      ],
+    ],
 
-## What you had to do to get there
+    // And then here we have some basic types.
+    'collectionId' => [
 
-1. Enable this module.
-1. Create a render pattern by creating a file called `THEME/render_patterns/ListOfThumbs.php` the contents of which are:
+      // Both integers and nulls can be set on this key.
+      'type' => ['integer', 'null'],
+      'default' => 10,
+    ],
 
-        <?php
-        
-        use \Drupal\render_patterns\Pattern;
-        
-        /**
-         * Represents a ListOfThumbs object class.
-         * 
-         * @brief Renders images in a thumbnail image style as a list.
-         */
-        class ListOfThumbs extends Pattern {
-        
-          protected $properties = [
-            'images' => [
-              'type' => 'array',
-            ],
-            'style' => [
-              'type' => 'string',
-              'default' => 'thumb',
-            ]
-          ]
+    // Just a simple array.
+    'ajaxContext' => ['type' => 'array'],
+  ];
+}
+```
 
-          public function build() {
-            $items = array();
-            foreach ($this->images as $uri) {
-              $items[] = array(
-                '#theme' => 'image_style',
-                '#style_name' => 'thumb',
-                '#path' => $uri,
-              );
-            }
-            foreach ($items as &$item) {
-              $item = drupal_render($item);
-            }
-            $build = array(
-              '#theme' => 'item_list',
-              '#type' => 'ul',
-              '#items' => $items,
-              '#attributes' => array(
-                'class' => 'list-of-thumbs',
-              ),
-            );
+## Building The Render Array
 
-            return $build;
-          }
-        }
+Most often you will follow this simple pattern:
 
-## One more point `render()`.
+```php
+$renderable_array = render_patterns_get('MyReuseablePattern', [
+  'entity' => $account,
+  'ajaxContext' => ['foo' => 'bar'],
+])->build();
+$html = \Drupal::service('renderer')->render($renderable_array);
+```
 
-Notice that you can go directly to the rendered version by using the `render()` method. This is what you might want to do inside of a *.tpl.php file, where you actually need a string as the return value.  The following could show the contents of `list-of-thumbs.tpl.php`.
+## Instance Property Modification
 
-    <?php
-    print render_patterns_get("ListOfThumbs", [
-      'images' => [
-         'public://sun.jpg',
-         'public://moon.jpg',
-         'public://stars.jpg',
-      ]
-    ])->render();
+For more complete situations you have the ability to modify properties on an
+instance if you do something like this:
 
-For clarity the above is equivalent to doing the following:
+```php
+$pattern = render_patterns_get('MyReuseablePattern', [
+  'entity' => $account,
+  'ajaxContext' => ['foo' => 'bar'],
+]);
 
-    <?php
-    $obj = render_patterns_get("ListOfThumbs");
-    $obj->images = array(
-      'public://sun.jpg',
-      'public://moon.jpg',
-      'public://stars.jpg',
-    );
-    print drupal_render($obj->build());
+$pattern->entity = $node;
 
-## Design Decisions/Rationale
+$renderable_array = $pattern->build();
+...
+```
 
-With heavy use of render arrays in writing complex themes, I found that I was repeating the same render array configurations throughtout several locations: preprocessors, tpls.  This became a headache to keep in sync if such a pattern changed.  I thought, I need something like a theme declaration that returns a renderable array not a string.  This module is my answer implementing a write once, use often approach for these "render patterns".
+## Property Validation
+
+Property values will be validated against the schema defined
+by `getProperties()` and `\Drupal\render_patterns\PatternException` will be
+thrown if the value falls outside of the allowed `type`. Validation
+uses [JSON Schema](https://json-schema.org/latest/json-schema-validation.html),
+which receives a schema built from `getProperties()` with a few, minor
+modifications for compatibility with Drupal.
 
 ## Contact
 
