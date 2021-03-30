@@ -21,10 +21,11 @@
 - `::ajaxWrap()`
 - `::getForm()`
 - `::defaults()`
+- `::render()` has been remove. Use the render service after `::build()`.
 
 ### Deprecated
 
-- `$this->properties`.  You should migrate to `::getProperties()`.
+- `$this->properties`. You should migrate to `::getProperties()`.
 
 ## [8.x-2.1] - 2021-03-26
 
