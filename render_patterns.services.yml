@@ -1,5 +1,6 @@
 services:
   render_patterns.autoloader:
     class: Drupal\render_patterns\EventSubscriber\PatternAutoloader
+    arguments: [ '@cache.bootstrap', '@config.factory', '@class_loader', '@module_handler' ]
     tags:
-      - {name: event_subscriber}
+      - { name: event_subscriber }

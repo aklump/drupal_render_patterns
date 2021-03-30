@@ -3,13 +3,59 @@
 namespace Drupal\render_patterns\EventSubscriber;
 
 use Drupal\Component\Utility\SortArray;
+use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Config\ConfigCrudEvent;
+use Drupal\Core\Config\ConfigEvents;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Symfony\Component\ClassLoader\ApcClassLoader;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
- * Adds autoloading of pattern classes to the bootstrap.
+ * Adds auto-loading of pattern classes to the bootstrap.
  */
 class PatternAutoloader implements EventSubscriberInterface {
+
+  /**
+   * @var \Drupal\Core\Cache\CacheBackendInterface
+   */
+  private $cache;
+
+  /**
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  private $config;
+
+  /**
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  private $moduleHandler;
+
+  /**
+   * @var \Symfony\Component\ClassLoader\ApcClassLoader
+   */
+  private $classLoader;
+
+  /**
+   * PatternAutoloader constructor.
+   *
+   * @param \Drupal\Core\Cache\CacheBackendInterface $cache
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   * @param \Symfony\Component\ClassLoader\ApcClassLoader $class_loader
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   */
+  public function __construct(
+    CacheBackendInterface $cache,
+    ConfigFactoryInterface $config_factory,
+    ApcClassLoader $class_loader,
+    ModuleHandlerInterface $module_handler
+  ) {
+    $this->cache = $cache;
+    $this->configFactory = $config_factory;
+    $this->classLoader = $class_loader;
+    $this->moduleHandler = $module_handler;
+  }
 
   /**
    * {@inheritdoc}
@@ -18,6 +64,7 @@ class PatternAutoloader implements EventSubscriberInterface {
     return [
       // We have to load our classes before anything else so they are available.
       KernelEvents::REQUEST => ['registerPatternClasses', 1000],
+      ConfigEvents::SAVE => 'handleSystemThemeConfigUpdate',
     ];
   }
 
@@ -28,7 +75,7 @@ class PatternAutoloader implements EventSubscriberInterface {
    * list in the bootstrap cache bin.
    */
   public function registerPatternClasses() {
-    if ($cached = \Drupal::cache('bootstrap')->get('render_patterns_list')) {
+    if ($cached = $this->cache->get('render_patterns_list')) {
       $patterns_info = $cached->data;
     }
     else {
@@ -36,17 +83,16 @@ class PatternAutoloader implements EventSubscriberInterface {
       // If we don't have a cached pattern list, we'll run our hook info and
       // compile it.  Then cache it to bootstrap bin.
       $patterns_info = [];
-      $module_handler = \Drupal::moduleHandler();
-      $implementations = $module_handler
+      $implementations = $this->moduleHandler
         ->getImplementations('render_patterns_info');
 
       foreach ($implementations as $implementing_name) {
         $weight = 0;
-        $info = $module_handler
+        $info = $this->moduleHandler
           ->invoke($implementing_name, 'render_patterns_info');
         if ($info) {
           if (!isset($info['weight'])) {
-            $weight = \Drupal::config('core.extension')
+            $weight = $this->configFactory->get('core.extension')
               ->get('module.' . $implementing_name);
           }
           $patterns_info[$implementing_name] = $info + ['weight' => $weight];
@@ -54,18 +100,29 @@ class PatternAutoloader implements EventSubscriberInterface {
       }
 
       // Allow others to alter this list.
-      $module_handler->alter('render_patterns_info', $patterns_info);
+      $this->moduleHandler->alter('render_patterns_info', $patterns_info);
 
       // Put in weight order, after the alter has processed.
       uasort($patterns_info, [SortArray::class, 'sortByWeightElement']);
 
-      \Drupal::cache('bootstrap')->set('render_patterns_list', $patterns_info);
+      $this->cache->set('render_patterns_list', $patterns_info);
     }
 
     // Register all our directories as PSR-4 namespaces.
-    $loader = \Drupal::service('class_loader');
     foreach ($patterns_info as $info) {
-      $loader->addPsr4('Drupal\\render_patterns\\Pattern\\', $info['directory']);
+      $this->classLoader->addPsr4('Drupal\\render_patterns\\Pattern\\', $info['directory']);
+    }
+  }
+
+  /**
+   * When the system default theme changes we have to delete the cached list.
+   *
+   * @param \Drupal\Core\Config\ConfigCrudEvent $event
+   */
+  public function handleSystemThemeConfigUpdate(ConfigCrudEvent $event) {
+    if ($event->isChanged('default') && $event->getConfig()
+        ->getName() === 'system.theme') {
+      $this->cache->delete('render_patterns_list');
     }
   }
 
