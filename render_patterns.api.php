@@ -20,7 +20,7 @@
  */
 function hook_render_patterns_info() {
   return [
-    'directory' => drupal_get_path('module', 'my_module') . '/render_patterns',
+    'directory' => drupal_get_path('module', 'my_module') . '/src/render_patterns',
     // Give the theme the higher weight so it can override.
     'weight' => 10,
   ];

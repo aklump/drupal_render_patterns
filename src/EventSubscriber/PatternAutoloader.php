@@ -64,7 +64,7 @@ class PatternAutoloader implements EventSubscriberInterface {
     return [
       // We have to load our classes before anything else so they are available.
       KernelEvents::REQUEST => ['registerPatternClasses', 1000],
-      ConfigEvents::SAVE => 'handleSystemThemeConfigUpdate',
+      ConfigEvents::SAVE => 'handleCachedPatternsList',
     ];
   }
 
@@ -85,7 +85,6 @@ class PatternAutoloader implements EventSubscriberInterface {
       $patterns_info = [];
       $implementations = $this->moduleHandler
         ->getImplementations('render_patterns_info');
-
       foreach ($implementations as $implementing_name) {
         $weight = 0;
         $info = $this->moduleHandler
@@ -119,9 +118,8 @@ class PatternAutoloader implements EventSubscriberInterface {
    *
    * @param \Drupal\Core\Config\ConfigCrudEvent $event
    */
-  public function handleSystemThemeConfigUpdate(ConfigCrudEvent $event) {
-    if ($event->isChanged('default') && $event->getConfig()
-        ->getName() === 'system.theme') {
+  public function handleCachedPatternsList(ConfigCrudEvent $event) {
+    if ($event->getConfig()->getName() === 'core.extension') {
       $this->cache->delete('render_patterns_list');
     }
   }

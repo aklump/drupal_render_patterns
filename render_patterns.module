@@ -62,16 +62,19 @@ function render_patterns_get(string $pattern_name, array $preset_values = []): P
  * Automatically register the default theme as providing render patterns based
  * on the existence of the directory.
  */
-function render_patterns_render_patterns_info() {
-  $config = \Drupal::service('config.factory')->get('system.theme');
-  if (($theme_folder = \Drupal::root() . '/' . drupal_get_path('theme', $config->get('default')) . '/src/render_patterns')
-    && is_dir($theme_folder)) {
-    return [
-      'directory' => $theme_folder,
-      // Give the theme the higher weight so it can override.
-      'weight' => 10,
-    ];
+function render_patterns_render_patterns_info_alter(&$info) {
+  $themes = \Drupal::service('extension.list.theme')->getList();
+  $default_theme_name = \Drupal::service('config.factory')
+    ->get('system.theme')
+    ->get('default');
+  foreach ($themes as $theme) {
+    $theme_folder = drupal_get_path('theme', $theme->getName()) . '/src/render_patterns';
+    if (is_dir(\Drupal::root() . '/' . $theme_folder)) {
+      $info[$theme->getName()] = [
+        'directory' => $theme_folder,
+        // Give the default theme the trump weight.
+        'weight' => $default_theme_name === $theme->getName() ? 10 : 0,
+      ];
+    }
   }
-
-  return [];
 }
