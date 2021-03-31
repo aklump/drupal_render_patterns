@@ -10,11 +10,6 @@
     "license": "GPL-2.0-or-later",
     "require": {
         "justinrainbow/json-schema": "^5.2",
-        "aklump/default-value": "^0.0.2"
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Drupal\\render_patterns\\": "src/"
-        }
+        "aklump/default-value": "^0.0.3"
     }
 }
