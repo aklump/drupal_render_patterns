@@ -8,7 +8,6 @@ use Drupal\Core\Config\ConfigCrudEvent;
 use Drupal\Core\Config\ConfigEvents;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Symfony\Component\ClassLoader\ApcClassLoader;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -42,13 +41,16 @@ class PatternAutoloader implements EventSubscriberInterface {
    *
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   * @param \Symfony\Component\ClassLoader\ApcClassLoader $class_loader
+   * @param $class_loader
+   *   The class loader. Normally Composer's ClassLoader, as included by the
+   *   front controller, but may also be decorated; e.g.,
+   *   \Symfony\Component\ClassLoader\ApcClassLoader.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    */
   public function __construct(
     CacheBackendInterface $cache,
     ConfigFactoryInterface $config_factory,
-    ApcClassLoader $class_loader,
+    $class_loader,
     ModuleHandlerInterface $module_handler
   ) {
     $this->cache = $cache;
