@@ -243,22 +243,36 @@ abstract class Pattern implements PatternInterface {
    * {@inheritdoc}
    */
   public static function get(array $values = []): PatternInterface {
-    if (in_array(ContainerInjectionInterface::class, class_implements(static::class))) {
-      $instance = static::create(\Drupal::getContainer());
-    }
-    else {
-      $instance = new static();
-    }
-    foreach ($values as $key => $value) {
+    try {
+      if (in_array(ContainerInjectionInterface::class, class_implements(static::class))) {
+        $instance = static::create(\Drupal::getContainer());
+      }
+      else {
+        $instance = new static();
+      }
+      foreach ($values as $key => $value) {
 
-      // We do this so that the pattern has a chance to provide the
-      // default values to us.  If we didn't do the magic getter, then we
-      // could get an exception when setting $key if NULL is not allowed.
-      $value = $value ?? $instance->{$key};
-      $instance->{$key} = $value;
-    }
+        // We do this so that the pattern has a chance to provide the
+        // default values to us.  If we didn't do the magic getter, then we
+        // could get an exception when setting $key if NULL is not allowed.
+        $value = $value ?? $instance->{$key};
+        $instance->{$key} = $value;
+      }
 
-    return $instance;
+      return $instance;
+    }
+    catch (PatternException $exception) {
+      watchdog_exception('render_patterns', $exception);
+      if (\Drupal::currentUser()
+        ->hasPermission('access administration pages')) {
+        \Drupal::messenger()->addError($exception->getMessage());
+      }
+      throw $exception;
+    }
+    catch (\Exception $exception) {
+      watchdog_exception('render_patterns', $exception);
+      throw $exception;
+    }
   }
 
 }
