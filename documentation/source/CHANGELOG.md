@@ -8,6 +8,7 @@
 - The `::get()` method to replace `render_patterns_get()`.
 - Invalidate `\Drupal::cache('bootstrap')->get('render_patterns_list')` when
   default theme changes.
+- Composer-based dependencies. See _README.md_ for adding to your app-level _composer.json_ for dependencies.  
 
 ### Changed
 
