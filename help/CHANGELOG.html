@@ -1,27 +1,4 @@
 
-<h2>[4.0.0] - 2021-10-04</h2>
-
-<h3>Added</h3>
-
-<ul>
-<li>Standard namespaces so core auto-loading is used.</li>
-</ul>
-
-<h3>Changed</h3>
-
-<ul>
-<li>Pattern classes should now be namespaced to their extension, like other classes.  For example of your theme <code>foo_theme</code> is providing classes they should be namespaced to <code>Drupal\foo_theme\RenderPatterns\</code>.  They should be saved to <em>foo_theme/src/RenderPatterns/</em>.  The same is true for modules that provide render pattern(s).</li>
-</ul>
-
-<h3>Removed</h3>
-
-<ul>
-<li><code>render_patterns_get</code></li>
-<li><code>hook_render_patterns_info</code></li>
-<li><code>hook_render_patterns_info_alter</code></li>
-<li><code>\Drupal\render_patterns\Uncacheable</code></li>
-</ul>
-
 <h2>[8.x-3.0] - 2021-03-29</h2>
 
 <h3>Added</h3>
@@ -90,10 +67,10 @@ documentation <em>update-v2.md</em> on how to handle this breaking change.</li>
 
 <ul>
 <li>You must declare all properties as protected or in the schema.</li>
-<li>Change all your patterns to extend <code>\Drupal\my_theme\RenderPatterns\</code> instead
+<li>Change all your patterns to extend <code>\Drupal\render_patterns\Pattern</code> instead
 of <code>RenderPatternsPattern</code>.</li>
 <li>You must add the PHP 7 typehints for: <code>build</code> and <code>render</code>
-per <code>\Drupal\my_theme\RenderPatterns\Interface</code>.</li>
+per <code>\Drupal\render_patterns\PatternInterface</code>.</li>
 <li>It is no longer recommended to suffix your classes with <code>RenderPattern</code>.</li>
 <li>You may now pass an array of values as the second argument
 to <code>render_patterns_get</code> to set those properties on instantiation.</li>

@@ -4,14 +4,14 @@
 
 ## Summary
 
-The _Render Patterns_ module allows you to encapsulate Drupal render arrays as PHP classes, for repeat use.  You expose only the dynamic elements of your render array as class properties, and the rest of the render array is hidden within the black box of the render pattern class.  This type of design makes sense if you need to reference the same render array in more than one place as it avoids errors caused by code duplication.  It comes from the [DRY principle](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
+The _Render Patterns_ module allows you to encapsulate Drupal render arrays as class objects, for repetitive use.  You expose only the dynamic elements of your render array as class properties, and the rest of the render array is hidden within the black box of the render pattern class.  This type of design makes sense if you need to reference the same render array in more than one place as it avoids errors caused by code duplication.  It comes from the [DRY principle](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
 
 You may also visit the [project page](http://www.drupal.org/project/render_patterns) on Drupal.org.
 
 ## Installation
 
 1. Download this module to _web/modules/custom/render_patterns_.
-2. Add the following to the application's _composer.json_ above web root.
+1. Add the following to the application's _composer.json_ above web root.
 
     ```json
     {
@@ -24,10 +24,9 @@ You may also visit the [project page](http://www.drupal.org/project/render_patte
     }
     ```
 
-3. Now run `composer require drupal/render-patterns`
-4. Enable this module.
-5. Begin creating one or more render patterns in _{active theme}/src/RenderPatterns/_.  (You may also provide classes in a module by adjusting the namespace to the module.)
-6. Use namespace `\Drupal\my_theme\src\RenderPatterns` for the classes.
+1. Now run `composer require drupal/render-patterns`
+1. Enable this module.
+1. Begin creating one or more render patterns in _{active theme}/src/render_patterns/_.
 
 ## Usage
 

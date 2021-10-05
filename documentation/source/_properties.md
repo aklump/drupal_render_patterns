@@ -5,9 +5,9 @@ pattern is a class with a `build()` method. As shown immediately below, nothing
 changes across implementations. This may not always be practical, so...
 
 ```php
-namespace Drupal\my_theme\RenderPatterns;
+namespace Drupal\render_patterns\Pattern;
 
-final MyReuseablePattern extends \Drupal\render_patterns\Pattern {
+final MyReuseablePattern extends Pattern {
 
   public function build(): array {
     return ['#markup' => 'I am reusable text.'];
@@ -76,7 +76,7 @@ protected function getProperties(): array {
 Most often you will follow this simple pattern:
 
 ```php
-$renderable_array = \Drupal\my_theme\RenderPatterns\MyReuseablePattern::get([
+$renderable_array = \Drupal\render_patterns\Pattern\MyReuseablePattern::get([
   'entity' => $account,
   'ajaxContext' => ['foo' => 'bar'],
 ])->build();
@@ -89,7 +89,7 @@ For more complete situations you have the ability to modify properties on an
 instance if you do something like this:
 
 ```php
-$pattern = \Drupal\my_theme\RenderPatterns\MyReuseablePattern::get([
+$pattern = \Drupal\render_patterns\Pattern\MyReuseablePattern::get([
   'entity' => $account,
   'ajaxContext' => ['foo' => 'bar'],
 ]);
@@ -103,7 +103,7 @@ $renderable_array = $pattern->build();
 ## Property Validation
 
 Property values will be validated against the schema defined
-by `getProperties()` and `\Drupal\my_theme\RenderPatterns\Exception` will be
+by `getProperties()` and `\Drupal\render_patterns\PatternException` will be
 thrown if the value falls outside of the allowed `type`. Validation
 uses [JSON Schema](https://json-schema.org/latest/json-schema-validation.html),
 which receives a schema built from `getProperties()` with a few, minor

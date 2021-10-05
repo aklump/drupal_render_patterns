@@ -3,14 +3,14 @@
 
 <h2>The problem: This will not work</h2>
 
-<pre><code>$obj = \Drupal\my_theme\RenderPatterns\ListOfThumbs::get();
+<pre><code>$obj = \Drupal\render_patterns\Pattern\ListOfThumbs::get();
 $obj-&gt;images[] = 'public://do.jpg';
 $obj-&gt;images[] = 'public://re.jpg';
 </code></pre>
 
 <h2>Solution 1</h2>
 
-<pre><code>$obj = \Drupal\my_theme\RenderPatterns\ListOfThumbs::get();
+<pre><code>$obj = \Drupal\render_patterns\Pattern\ListOfThumbs::get();
 $obj-&gt;images = [
   'public://do.jpg',
   'public://re.jpg',
@@ -19,7 +19,7 @@ $obj-&gt;images = [
 
 <h2>Solution 2</h2>
 
-<pre><code>$obj = \Drupal\my_theme\RenderPatterns\ListOfThumbs::get();
+<pre><code>$obj = \Drupal\render_patterns\Pattern\ListOfThumbs::get();
 $images = [];
 $images[] = 'public://do.jpg';
 $images[] = 'public://re.jpg';

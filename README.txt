@@ -5,12 +5,12 @@
 Summary
 
    The Render Patterns module allows you to encapsulate Drupal render
-   arrays as PHP classes, for repeat use. You expose only the dynamic
-   elements of your render array as class properties, and the rest of the
-   render array is hidden within the black box of the render pattern
-   class. This type of design makes sense if you need to reference the
-   same render array in more than one place as it avoids errors caused by
-   code duplication. It comes from the [2]DRY principle.
+   arrays as class objects, for repetitive use. You expose only the
+   dynamic elements of your render array as class properties, and the rest
+   of the render array is hidden within the black box of the render
+   pattern class. This type of design makes sense if you need to reference
+   the same render array in more than one place as it avoids errors caused
+   by code duplication. It comes from the [2]DRY principle.
 
    You may also visit the [3]project page on Drupal.org.
 
@@ -31,9 +31,7 @@ Installation
     3. Now run composer require drupal/render-patterns
     4. Enable this module.
     5. Begin creating one or more render patterns in {active
-       theme}/src/RenderPatterns/. (You may also provide classes in a
-       module by adjusting the namespace to the module.)
-    6. Use namespace \Drupal\my_theme\src\RenderPatterns for the classes.
+       theme}/src/render_patterns/.
 
 Usage
 
@@ -43,9 +41,9 @@ Usage
    situations. The pattern is a class with a build() method. As shown
    immediately below, nothing changes across implementations. This may not
    always be practical, so...
-namespace Drupal\my_theme\RenderPatterns;
+namespace Drupal\render_patterns\Pattern;
 
-final MyReuseablePattern extends \Drupal\render_patterns\Pattern {
+final MyReuseablePattern extends Pattern {
 
   public function build(): array {
     return ['#markup' => 'I am reusable text.'];
@@ -108,7 +106,7 @@ protected function getProperties(): array {
 Building The Render Array
 
    Most often you will follow this simple pattern:
-$renderable_array = \Drupal\my_theme\RenderPatterns\MyReuseablePattern::get([
+$renderable_array = \Drupal\render_patterns\Pattern\MyReuseablePattern::get([
   'entity' => $account,
   'ajaxContext' => ['foo' => 'bar'],
 ])->build();
@@ -118,7 +116,7 @@ Instance Property Modification
 
    For more complete situations you have the ability to modify properties
    on an instance if you do something like this:
-$pattern = \Drupal\my_theme\RenderPatterns\MyReuseablePattern::get([
+$pattern = \Drupal\render_patterns\Pattern\MyReuseablePattern::get([
   'entity' => $account,
   'ajaxContext' => ['foo' => 'bar'],
 ]);
@@ -131,7 +129,7 @@ $renderable_array = $pattern->build();
 Property Validation
 
    Property values will be validated against the schema defined by
-   getProperties() and \Drupal\my_theme\RenderPatterns\Exception will be
+   getProperties() and \Drupal\render_patterns\PatternException will be
    thrown if the value falls outside of the allowed type. Validation uses
    [4]JSON Schema, which receives a schema built from getProperties() with
    a few, minor modifications for compatibility with Drupal.

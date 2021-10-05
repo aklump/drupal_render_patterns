@@ -6,7 +6,7 @@ This example shows you how to use services in your pattern.
 1. Declare `private` class variables.
 
 ```php
-namespace Drupal\my_theme\RenderPatterns\;
+namespace Drupal\render_patterns\Pattern;
 
 final class LibraryFacets extends Pattern implements \Drupal\Core\DependencyInjection\ContainerInjectionInterface {
 
