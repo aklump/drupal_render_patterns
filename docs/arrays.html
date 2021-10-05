@@ -9,7 +9,7 @@
 
 <body class="page--arrays">
 <header>
-  <div class="pager"><a href="README.html" class="prev README">&laquo;Drupal Module: Render Patterns</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="ROADMAP.html" class="next roadmap">Roadmap&raquo;</a></div></header>
+  <div class="pager"><a href="README.html" class="prev README">&laquo;Drupal Module: Render Patterns</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="services.html" class="next services">Using Services (Dependency Injection)&raquo;</a></div></header>
 <section class="sub-header">
   <div class="breadcrumbs"><a href="index.html">Index</a>
          &raquo
@@ -29,14 +29,14 @@
 
 <h2>The problem: This will not work</h2>
 
-<pre><code>$obj = \Drupal\render_patterns\Pattern\ListOfThumbs::get();
+<pre><code>$obj = \Drupal\my_theme\RenderPatterns\ListOfThumbs::get();
 $obj-&gt;images[] = 'public://do.jpg';
 $obj-&gt;images[] = 'public://re.jpg';
 </code></pre>
 
 <h2>Solution 1</h2>
 
-<pre><code>$obj = \Drupal\render_patterns\Pattern\ListOfThumbs::get();
+<pre><code>$obj = \Drupal\my_theme\RenderPatterns\ListOfThumbs::get();
 $obj-&gt;images = [
   'public://do.jpg',
   'public://re.jpg',
@@ -45,7 +45,7 @@ $obj-&gt;images = [
 
 <h2>Solution 2</h2>
 
-<pre><code>$obj = \Drupal\render_patterns\Pattern\ListOfThumbs::get();
+<pre><code>$obj = \Drupal\my_theme\RenderPatterns\ListOfThumbs::get();
 $images = [];
 $images[] = 'public://do.jpg';
 $images[] = 'public://re.jpg';
@@ -58,9 +58,9 @@ $obj-&gt;images = $images;
 </div>
 
 <footer>
-  <div class="pager"><a href="README.html" class="prev README">&laquo;Drupal Module: Render Patterns</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="ROADMAP.html" class="next roadmap">Roadmap&raquo;</a></div>  
+  <div class="pager"><a href="README.html" class="prev README">&laquo;Drupal Module: Render Patterns</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="services.html" class="next services">Using Services (Dependency Injection)&raquo;</a></div>  
   <div id="footer-legaleeze">
-    <p class="legaleeze center">Version: 1.0 &bull; Last Updated: Fri, 23 Apr 2021 11:23:58 -0700</p>
+    <p class="legaleeze center">Version: 1.0 &bull; Last Updated: Tue, 05 Oct 2021 11:39:10 -0700</p>
   </div>
 </footer>
 
