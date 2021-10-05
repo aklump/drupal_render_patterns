@@ -2,7 +2,7 @@ name: 'Render Patterns'
 description: 'Encapsulate render arrays as PHP classes for re-usability.'
 package: 'In the Loft Studios'
 core: 8.x
-version: 8.x-3.0.4
+version: 8.x-4.0.0
 php: 7.1
 author: aklump
 type: module
