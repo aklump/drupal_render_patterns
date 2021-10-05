@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.0.0] - 2021-10-04
+
+### Added
+- Standard namespaces so core auto-loading is used.
+  
+### Changed
+- Pattern classes should now be namespaced to their extension, like other classes.  For example of your theme `foo_theme` is providing classes they should be namespaced to `Drupal\foo_theme\RenderPatterns\`.  They should be saved to _foo_theme/src/RenderPatterns/_.  The same is true for modules that provide render pattern(s).
+  
+### Removed
+- `render_patterns_get`
+- `hook_render_patterns_info`
+- `hook_render_patterns_info_alter`
+- `\Drupal\render_patterns\Uncacheable`
+  
 ## [8.x-3.0] - 2021-03-29
 
 ### Added
@@ -53,10 +67,10 @@
 ## 8.x-1.1-rc1 2019-03-15T16:16, aklump
 
 * You must declare all properties as protected or in the schema.
-* Change all your patterns to extend `\Drupal\render_patterns\Pattern` instead
+* Change all your patterns to extend `\Drupal\my_theme\RenderPatterns\` instead
   of `RenderPatternsPattern`.
 * You must add the PHP 7 typehints for: `build` and `render`
-  per `\Drupal\render_patterns\PatternInterface`.
+  per `\Drupal\my_theme\RenderPatterns\Interface`.
 * It is no longer recommended to suffix your classes with `RenderPattern`.
 * You may now pass an array of values as the second argument
   to `render_patterns_get` to set those properties on instantiation.

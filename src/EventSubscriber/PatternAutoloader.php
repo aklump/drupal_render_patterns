@@ -12,9 +12,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
- * Adds auto-loading of pattern classes to the bootstrap.
+ * Ensure theme autoloading works in all cases.
  */
-class PatternAutoloader implements EventSubscriberInterface {
+final class PatternAutoloader implements EventSubscriberInterface {
 
   /**
    * @var \Drupal\Core\Cache\CacheBackendInterface
@@ -24,7 +24,7 @@ class PatternAutoloader implements EventSubscriberInterface {
   /**
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
-  private $config;
+  private $configFactory;
 
   /**
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
@@ -64,17 +64,14 @@ class PatternAutoloader implements EventSubscriberInterface {
    */
   public static function getSubscribedEvents() {
     return [
-      // We have to load our classes before anything else so they are available.
+      // Load our classes before anything else, so they are available.
       KernelEvents::REQUEST => ['registerPatternClasses', 1000],
       ConfigEvents::SAVE => 'handleCachedPatternsList',
     ];
   }
 
   /**
-   * Add all render pattern classes to the autoloader.
-   *
-   * This will also cache the implementations of hook_render_patterns_info in a
-   * list in the bootstrap cache bin.
+   * Ensures all themes providing render patterns are added to the autoloader.
    */
   public function registerPatternClasses() {
     if ($cached = $this->cache->get('render_patterns_list')) {
@@ -82,36 +79,25 @@ class PatternAutoloader implements EventSubscriberInterface {
     }
     else {
 
-      // If we don't have a cached pattern list, we'll run our hook info and
-      // compile it.  Then cache it to bootstrap bin.
+      // Search all themes to see if they provide render_patterns, if they do
+      // cache the autoloading information.  The core's autoloader doesn't not
+      // seem to add theme autoloading earlier enough for some custom
+      // controllers, which is why we have to do this here.  In other cases,
+      // this is going to be redundant, but harmlessly so.
       $patterns_info = [];
-      $implementations = $this->moduleHandler
-        ->getImplementations('render_patterns_info');
-      foreach ($implementations as $implementing_name) {
-        $weight = 0;
-        $info = $this->moduleHandler
-          ->invoke($implementing_name, 'render_patterns_info');
-        if ($info) {
-          if (!isset($info['weight'])) {
-            $weight = $this->configFactory->get('core.extension')
-              ->get('module.' . $implementing_name);
-          }
-          $patterns_info[$implementing_name] = $info + ['weight' => $weight];
+      $themes = \Drupal::service('theme_handler')->listInfo();
+      foreach ($themes as $theme) {
+        $name = $theme->getName();
+        $path = dirname($theme->getExtensionPathname());
+        if (is_dir(\Drupal::root() . '/' . $path . '/src/RenderPatterns')) {
+          $patterns_info[] = ['Drupal\\' . $name . '\\', \Drupal::root() . '/' . $path . '/src/'];
         }
       }
-
-      // Allow others to alter this list.
-      $this->moduleHandler->alter('render_patterns_info', $patterns_info);
-
-      // Put in weight order, after the alter has processed.
-      uasort($patterns_info, [SortArray::class, 'sortByWeightElement']);
-
       $this->cache->set('render_patterns_list', $patterns_info);
     }
-
-    // Register all our directories as PSR-4 namespaces.
     foreach ($patterns_info as $info) {
-      $this->classLoader->addPsr4('Drupal\\render_patterns\\Pattern\\', $info['directory']);
+      list($namespace, $directory) = $info;
+      $this->classLoader->addPsr4($namespace, $directory);
     }
   }
 
@@ -119,6 +105,7 @@ class PatternAutoloader implements EventSubscriberInterface {
    * When the system default theme changes we have to delete the cached list.
    *
    * @param \Drupal\Core\Config\ConfigCrudEvent $event
+   *   An event instance.
    */
   public function handleCachedPatternsList(ConfigCrudEvent $event) {
     if ($event->getConfig()->getName() === 'core.extension') {

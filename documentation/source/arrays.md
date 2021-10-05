@@ -4,13 +4,13 @@ Because of the internals of the `RenderPatternsPattern` class, and how the defau
 
 ## The problem: This will not work
 
-    $obj = \Drupal\render_patterns\Pattern\ListOfThumbs::get();
+    $obj = \Drupal\my_theme\RenderPatterns\ListOfThumbs::get();
     $obj->images[] = 'public://do.jpg';
     $obj->images[] = 'public://re.jpg';
 
 ## Solution 1
 
-    $obj = \Drupal\render_patterns\Pattern\ListOfThumbs::get();
+    $obj = \Drupal\my_theme\RenderPatterns\ListOfThumbs::get();
     $obj->images = [
       'public://do.jpg',
       'public://re.jpg',
@@ -18,7 +18,7 @@ Because of the internals of the `RenderPatternsPattern` class, and how the defau
 
 ## Solution 2
 
-    $obj = \Drupal\render_patterns\Pattern\ListOfThumbs::get();
+    $obj = \Drupal\my_theme\RenderPatterns\ListOfThumbs::get();
     $images = [];
     $images[] = 'public://do.jpg';
     $images[] = 'public://re.jpg';
