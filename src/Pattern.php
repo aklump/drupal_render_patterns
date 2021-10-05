@@ -55,7 +55,7 @@ abstract class Pattern implements PatternInterface {
         // Handle the "default" key.
         if (!array_key_exists('default', $definition)) {
           if (empty($definition['type'])) {
-            throw new PatternException($this, 'Missing "type" for the property "$property_name".');
+            throw new PatternException(get_class($this), 'Missing "type" for the property "$property_name".');
           }
           try {
             if (is_array($definition['type'])) {
@@ -96,7 +96,8 @@ abstract class Pattern implements PatternInterface {
   /**
    * Magic getter for overloaded properties.
    *
-   * @param $key
+   * @param string $property
+   *   The name of the property.
    *
    * @throws \Drupal\render_patterns\PatternException
    */
