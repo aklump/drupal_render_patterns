@@ -16,24 +16,23 @@ Summary
 
 Installation
 
-    1. Download this module to web/modules/custom/render_patterns.
-    2. Add the following to the application's composer.json above web
+    1. Add the following to the application's composer.json above web
        root.
 {
   "repositories": [
     {
-      "type": "path",
-      "url": "web/modules/custom/render_patterns"
+      "type": "github",
+      "url": "https://github.com/aklump/drupal_render_patterns"
     }
   ]
 }
 
-    3. Now run composer require drupal/render-patterns
-    4. Enable this module.
-    5. Begin creating one or more render patterns in {active
+    2. Now run composer require aklump_drupal/render_patterns
+    3. Enable this module.
+    4. Begin creating one or more render patterns in {active
        theme}/src/RenderPatterns/. (You may also provide classes in a
        module by adjusting the namespace to the module.)
-    6. Use namespace \Drupal\my_theme\src\RenderPatterns for the classes.
+    5. Use namespace \Drupal\my_theme\src\RenderPatterns for the classes.
 
 Usage
 
