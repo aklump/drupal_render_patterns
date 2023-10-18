@@ -36,19 +36,18 @@
 <h2>Installation</h2>
 
 <ol>
-<li>Download this module to <em>web/modules/custom/render_patterns</em>.</li>
 <li><p>Add the following to the application's <em>composer.json</em> above web root.</p>
 
 <pre><code class="json">{
   "repositories": [
     {
-      "type": "path",
-      "url": "web/modules/custom/render_patterns"
+      "type": "github",
+      "url": "https://github.com/aklump/drupal_render_patterns"
     }
   ]
 }
 </code></pre></li>
-<li><p>Now run <code>composer require drupal/render-patterns</code></p></li>
+<li><p>Now run <code>composer require aklump_drupal/render_patterns</code></p></li>
 <li>Enable this module.</li>
 <li>Begin creating one or more render patterns in <em>{active theme}/src/RenderPatterns/</em>.  (You may also provide classes in a module by adjusting the namespace to the module.)</li>
 <li>Use namespace <code>\Drupal\my_theme\src\RenderPatterns</code> for the classes.</li>
@@ -181,7 +180,7 @@ modifications for compatibility with Drupal.</p>
 <footer>
   <div class="pager"><a href="CHANGELOG.html" class="prev CHANGELOG">&laquo;Changelog</a><a href="index.html" class="index pager__book-title">Render Patterns</a><a href="arrays.html" class="next arrays">Problems With Array Overloading&raquo;</a></div>  
   <div id="footer-legaleeze">
-    <p class="legaleeze center">Version: 1.0 &bull; Last Updated: Thu, 14 Oct 2021 14:20:44 -0700</p>
+    <p class="legaleeze center">Version: 1.0 &bull; Last Updated: Wed, 18 Oct 2023 11:40:28 -0700</p>
   </div>
 </footer>
 
