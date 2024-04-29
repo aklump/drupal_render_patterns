@@ -1,3 +1,8 @@
+<!--
+id: readme
+tags: ''
+-->
+
 # Drupal Module: Render Patterns
 
 **Author:** Aaron Klump  <sourcecode@intheloftstudios.com>
@@ -8,28 +13,7 @@ The _Render Patterns_ module allows you to encapsulate Drupal render arrays as P
 
 You may also visit the [project page](http://www.drupal.org/project/render_patterns) on Drupal.org.
 
-## Install with Composer
-
-1. Because this is an unpublished package, you must define it's repository in your project's _composer.json_ file. Add the following to _composer.json_ in the `repositories` array:
-
-    ```json
-    {
-        "type": "github",
-        "url": "https://github.com/aklump/drupal_render_patterns"
-    }
-    ```
-
-2. Require this package:
-
-    ```
-    composer require aklump_drupal/render_patterns:^4.1
-    ```
-
-3. Add the installed directory to _.gitignore_
-
-   ```php
-   /web/modules/custom/render_patterns/
-   ```
+{{ composer.install|raw }}
 
 4. Enable this module.
 5. Begin creating one or more render patterns in _{active theme}/src/RenderPatterns/_.  (You may also provide classes in a module by adjusting the namespace to the module.)

@@ -8,3 +8,4 @@ LICENSE.txt
 /help/outline.merge.json
 /vendor/
 composer.lock
+.idea/

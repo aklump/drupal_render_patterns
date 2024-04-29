@@ -1,16 +1,17 @@
 {
-    "name": "aklump_drupal/render_patterns",
-    "type": "drupal-custom-module",
-    "authors": [
-        {
-            "name": "aklump",
-            "email": "sourcecode@intheloftstudios.com"
-        }
-    ],
-    "homepage" :"https://github.com/aklump/drupal_render_patterns",
-    "license": "GPL-2.0-or-later",
-    "require": {
-        "justinrainbow/json-schema": "^5.2",
-        "aklump/default-value": "^0.0.3"
+  "name": "aklump_drupal/render_patterns",
+  "type": "drupal-custom-module",
+  "authors": [
+    {
+      "name": "aklump",
+      "email": "sourcecode@intheloftstudios.com"
     }
+  ],
+  "homepage": "https://github.com/aklump/drupal_render_patterns",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": "^7.1",
+    "justinrainbow/json-schema": "^5.2",
+    "aklump/default-value": "^0.0.3"
+  }
 }
