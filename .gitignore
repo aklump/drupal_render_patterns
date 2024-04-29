@@ -1,11 +1,5 @@
-/.web_package/*
-!/.web_package/hooks
-/.web_package/hooks/*
-!/.web_package/hooks/build
-LICENSE.txt
-/documentation/core
-/documentation/README.md
-/help/outline.merge.json
 /vendor/
 composer.lock
 .idea/
+/bin/bind_book.sh
+/bin/flush_book.sh

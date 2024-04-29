@@ -1,0 +1,9 @@
+master: "8.x-4.x"
+remote: origin
+create_tags: patch
+push_tags: auto
+push_master: auto
+patch_prefix: .
+preserve_patch_zero: false
+pause: 0
+version_file: render_patterns.info.yml
