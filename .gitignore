@@ -1,3 +1,5 @@
 /vendor/
 composer.lock
 .idea/
+/bin/bind_book.sh
+/bin/flush_book.sh
