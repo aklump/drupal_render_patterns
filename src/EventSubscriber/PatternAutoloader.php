@@ -1,5 +1,5 @@
 <?php
-
+// SPDX-License-Identifier: GPL-2.0-or-later
 namespace Drupal\render_patterns\EventSubscriber;
 
 use Drupal\Component\Utility\SortArray;
@@ -90,7 +90,10 @@ final class PatternAutoloader implements EventSubscriberInterface {
         $name = $theme->getName();
         $path = dirname($theme->getExtensionPathname());
         if (is_dir(\Drupal::root() . '/' . $path . '/src/RenderPatterns')) {
-          $patterns_info[] = ['Drupal\\' . $name . '\\', \Drupal::root() . '/' . $path . '/src/'];
+          $patterns_info[] = [
+            'Drupal\\' . $name . '\\',
+            \Drupal::root() . '/' . $path . '/src/',
+          ];
         }
       }
       $this->cache->set('render_patterns_list', $patterns_info);

@@ -1,5 +1,5 @@
 <?php
-
+// SPDX-License-Identifier: GPL-2.0-or-later
 namespace Drupal\render_patterns;
 
 use Drupal\Component\Utility\DefaultValue;
