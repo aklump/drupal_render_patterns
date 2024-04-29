@@ -10,7 +10,7 @@
   "homepage": "https://github.com/aklump/drupal_render_patterns",
   "license": "GPL-2.0-or-later",
   "require": {
-    "php": "^7.1",
+    "php": "^7.1 || ^8",
     "justinrainbow/json-schema": "^5.2",
     "aklump/default-value": "^0.0.3"
   }
