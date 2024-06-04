@@ -3,7 +3,7 @@ description: 'Encapsulate render arrays as PHP classes for re-usability.'
 package: 'In the Loft Studios'
 core: 8.x
 core_version_requirement: '^8 || ^9'
-version: 4.1.5
+version: 4.1.6
 php: 7.1
 author: aklump
 type: module
