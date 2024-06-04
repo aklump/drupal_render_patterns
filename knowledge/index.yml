@@ -1,5 +1,6 @@
 page_order:
-  - readme
-  - services
-  - arrays
-  - changelog
+  general:
+    - readme
+    - services
+    - arrays
+    - changelog
