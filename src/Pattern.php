@@ -205,7 +205,7 @@ abstract class Pattern implements PatternInterface {
     // Replace FQN with native 'object' so JSON validator will process
     // correctly since it doesn't handle FQN objects.
     $replace = function ($type) {
-      return strstr($type, '\\') ? 'object' : $type;
+      return is_string($type) && strstr($type, '\\') ? 'object' : $type;
     };
     foreach ($data as $key => $datum) {
       $schema_type =& $schema['properties'][$key]['type'];
