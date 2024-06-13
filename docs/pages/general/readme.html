@@ -4,9 +4,9 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=4.1.6">
-      <link rel="stylesheet" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/dist/style.css?ver=4.1.6">
-      <link rel="stylesheet" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=4.1.6">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css">
+      <link rel="stylesheet" href="../../dist/style.css">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
     <title>Drupal Module: Render Patterns | Render Patterns Drupal Module</title>
 </head>
 <body class="my-5">
@@ -18,7 +18,7 @@
         <nav aria-label="breadcrumb">
   <ol class="breadcrumb mb-0">
         <li class="breadcrumb-item">
-      <a class="fw-bold" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/index.html">Render Patterns Drupal Module</a>
+      <a class="fw-bold" href="../../index.html">Render Patterns Drupal Module</a>
     </li>
     <li class="breadcrumb-item">
       <a class="fw-bold" href="#" data-bs-toggle="offcanvas"
@@ -26,7 +26,7 @@
          aria-controls="table-of-contents">TOC</a>
     </li>
     <li class="breadcrumb-item">
-      <a href="/Users/aklump/Code/Packages/d8/render_patterns/docs/pages/general/readme.html">General</a></li>
+      <a href="readme.html">General</a></li>
   </ol>
 </nav>
 
@@ -42,23 +42,23 @@
   <div class="row mb-5 pt-5">
     <article class="col">
       <h1 class="mb-4 text-primary">Drupal Module: Render Patterns</h1>
-      <p><strong>Author:</strong> Aaron Klump  <a href="/Users/aklump/Code/Packages/d8/render_patterns/docs/mailto:sourcecode@intheloftstudios.com">sourcecode@intheloftstudios.com</a></p>
+      <p><strong>Author:</strong> Aaron Klump  <a href="mailto:sourcecode@intheloftstudios.com">sourcecode@intheloftstudios.com</a></p>
 <h2>Summary</h2>
 <p>The <em>Render Patterns</em> module allows you to encapsulate Drupal render arrays as PHP classes, for repeat use. You expose only the dynamic elements of your render array as class properties, and the rest of the render array is hidden within the black box of the render pattern class. This type of design makes sense if you need to reference the same render array in more than one place as it avoids errors caused by code duplication. It comes from the <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself">DRY principle</a>.</p>
 <p>You may also visit the <a href="http://www.drupal.org/project/render_patterns">project page</a> on Drupal.org.</p>
-<h2>Install with Composer</h2>
-<ol>
-<li><p>Because this is an unpublished package, you must define it's repository in
-your project's <em>composer.json</em> file. Add the following to <em>composer.json</em> in
-the <code>repositories</code> array:</p>
-<pre><code class="json"> {
-     "type": "github",
-     "url": "https://github.com/aklump/drupal_render_patterns"
- }
+<h2>Install with Composer1. Because this is an unpublished package, you must define it's repository in</h2>
+<p>   your project's <em>composer.json</em> file. Add the following to <em>composer.json</em> in
+   the <code>repositories</code> array:</p>
+<pre><code>```json
+{
+    "type": "github",
+    "url": "https://github.com/aklump/drupal_render_patterns"
+}
+```
 </code></pre>
-</li>
+<ol>
 <li><p>Require this package:</p>
-<pre><code> composer require aklump_drupal/render_patterns:^4.1
+<pre><code> composer require aklump_drupal/render_patterns:^4.2
 </code></pre>
 </li>
 <li><p>Add the installed directory to <em>.gitignore</em></p>
@@ -171,9 +171,9 @@ modifications for compatibility with Drupal.</p>
   <footer class="footer d-flex justify-content-center">
     <div class="flex-column justify-content-center">
               Version:
-        <strong>4.1.6</strong>
+        <strong>4.2.0</strong>
         &bull;
-            Last Update: <strong>6/4/2024</strong>
+            Last Update: <strong>6/13/2024</strong>
     </div>
   </footer>
 
@@ -181,7 +181,7 @@ modifications for compatibility with Drupal.</p>
 <nav class="nav d-flex justify-content-center align-items-center
   fixed-bottom">
   <div class="btn-group flex-fill">
-              <a href="/Users/aklump/Code/Packages/d8/render_patterns/docs/pages/general/readme.html" class="btn nav__prev-chapter btn-secondary"><i class="bi
+              <a href="readme.html" class="btn nav__prev-chapter btn-secondary"><i class="bi
       bi-caret-left-fill"></i> Drupal Module: Render Patterns</a>
   
     
@@ -195,7 +195,7 @@ modifications for compatibility with Drupal.</p>
        aria-controls="table-of-contents"><i class="bi
            bi-list-ol"></i></a>
     
-              <a href="/Users/aklump/Code/Packages/d8/render_patterns/docs/pages/general/services.html" class="btn nav__next-page js-nav__next-page
+              <a href="services.html" class="btn nav__next-page js-nav__next-page
     btn-primary"><i class="bi bi-file-earmark"></i> Using Services (Dependency Injection) <i class="bi
        bi-caret-right-fill"></i></a>
   
@@ -225,28 +225,28 @@ modifications for compatibility with Drupal.</p>
         <h2 class="h4 mt-4">Matched Pages</h2>
         <ol class="list-unstyled">
                                               <li data-page="readme" value="1">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/pages/general/readme.html">Drupal Module: Render Patterns<span
+      <a class="js-page-link" href="readme.html">Drupal Module: Render Patterns<span
               class="js-search-score
               badge
               bg-info rounded-pill badge-sm"></span></a>
     </li>
   
                                     <li data-page="services" value="2">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/pages/general/services.html">Using Services (Dependency Injection)<span
+      <a class="js-page-link" href="services.html">Using Services (Dependency Injection)<span
               class="js-search-score
               badge
               bg-info rounded-pill badge-sm"></span></a>
     </li>
   
                                     <li data-page="arrays" value="3">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/pages/general/arrays.html">Problems With Array Overloading<span
+      <a class="js-page-link" href="arrays.html">Problems With Array Overloading<span
               class="js-search-score
               badge
               bg-info rounded-pill badge-sm"></span></a>
     </li>
   
                                     <li data-page="changelog" value="4">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/pages/general/changelog.html">Changelog<span
+      <a class="js-page-link" href="changelog.html">Changelog<span
               class="js-search-score
               badge
               bg-info rounded-pill badge-sm"></span></a>
@@ -259,19 +259,19 @@ modifications for compatibility with Drupal.</p>
               <h2 class="h4 mt-4">General</h2>
         <ol>
                                 <li data-page="readme" value="1">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/pages/general/readme.html">Drupal Module: Render Patterns</a>
+      <a class="js-page-link" href="readme.html">Drupal Module: Render Patterns</a>
     </li>
   
                                 <li data-page="services" value="2">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/pages/general/services.html">Using Services (Dependency Injection)</a>
+      <a class="js-page-link" href="services.html">Using Services (Dependency Injection)</a>
     </li>
   
                                 <li data-page="arrays" value="3">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/pages/general/arrays.html">Problems With Array Overloading</a>
+      <a class="js-page-link" href="arrays.html">Problems With Array Overloading</a>
     </li>
   
                                 <li data-page="changelog" value="4">
-      <a class="js-page-link" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/pages/general/changelog.html">Changelog</a>
+      <a class="js-page-link" href="changelog.html">Changelog</a>
     </li>
   
                   </ol>
@@ -293,22 +293,22 @@ modifications for compatibility with Drupal.</p>
                 
         <ul class="list-group list-group-flush">
                                     <a class="list-group-item list-group-item-action"
-                 data-tags="[]" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/pages/general/readme.html">Drupal Module: Render Patterns</a>
+                 data-tags="[]" href="readme.html">Drupal Module: Render Patterns</a>
                                                 <a class="list-group-item list-group-item-action"
-                 data-tags="[]" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/pages/general/services.html">Using Services (Dependency Injection)</a>
+                 data-tags="[]" href="services.html">Using Services (Dependency Injection)</a>
                                                 <a class="list-group-item list-group-item-action"
-                 data-tags="[]" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/pages/general/arrays.html">Problems With Array Overloading</a>
+                 data-tags="[]" href="arrays.html">Problems With Array Overloading</a>
                                                 <a class="list-group-item list-group-item-action"
-                 data-tags="[]" href="/Users/aklump/Code/Packages/d8/render_patterns/docs/pages/general/changelog.html">Changelog</a>
+                 data-tags="[]" href="changelog.html">Changelog</a>
                               </ul>
       </div>
     </div>
   </div>
 </div>
 
-  <script src="/Users/aklump/Code/Packages/d8/render_patterns/docs/dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=4.1.6"></script>
-  <script src="/Users/aklump/Code/Packages/d8/render_patterns/docs/dist/lunr.js?ver=4.1.6"></script>
-  <script src="/Users/aklump/Code/Packages/d8/render_patterns/docs/dist/knowledge.min.js?ver=4.1.6"></script>
+  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="../../dist/lunr.js"></script>
+  <script src="../../dist/knowledge.min.js"></script>
 
 </body>
 </html>

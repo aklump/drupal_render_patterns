@@ -8,9 +8,7 @@ The _Render Patterns_ module allows you to encapsulate Drupal render arrays as P
 
 You may also visit the [project page](http://www.drupal.org/project/render_patterns) on Drupal.org.
 
-##   Install with Composer
-
-1. Because this is an unpublished package, you must define it's repository in
+## Install with Composer1. Because this is an unpublished package, you must define it's repository in
    your project's _composer.json_ file. Add the following to _composer.json_ in
    the `repositories` array:
    
@@ -23,7 +21,7 @@ You may also visit the [project page](http://www.drupal.org/project/render_patte
 1. Require this package:
    
     ```
-    composer require aklump_drupal/render_patterns:^4.1
+    composer require aklump_drupal/render_patterns:^4.2
     ```
 1. Add the installed directory to _.gitignore_
    
