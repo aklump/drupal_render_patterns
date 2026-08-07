@@ -1,2 +1,11 @@
 title: 'Render Patterns Drupal Module'
 uuid: 2b64389a-a666-4008-a870-172ec7ed241a
+chapters:
+  -
+    id: general
+    title: General
+    pages:
+      - readme
+      - services
+      - arrays
+      - changelog
