@@ -8,26 +8,61 @@ The _Render Patterns_ module allows you to encapsulate Drupal render arrays as P
 
 You may also visit the [project page](http://www.drupal.org/project/render_patterns) on Drupal.org.
 
-## Install with Composer1. Because this is an unpublished package, you must define it's repository in
-   your project's _composer.json_ file. Add the following to _composer.json_ in
-   the `repositories` array:
-   
+## Install with Composer
+
+Because this is an unpublished, custom Drupal module, the way you install and depend on it is a little different than published, contributed modules.
+
+* Add the following to the **root-level** _composer.json_ in the `repositories` array:
     ```json
     {
-        "type": "github",
-        "url": "https://github.com/aklump/drupal_render_patterns"
+     "type": "github",
+     "url": "https://github.com/aklump/drupal_render_patterns"
     }
     ```
-1. Require this package:
-   
-    ```
-    composer require aklump_drupal/render_patterns:^4.2
-    ```
-1. Add the installed directory to _.gitignore_
-   
+* Add the installed directory to **root-level** _.gitignore_
+  
    ```php
    /web/modules/custom/render_patterns/
    ```
+* Proceed to either A or B, but not both.
+---
+### A. Install Standalone
+* Require _render_patterns_ at the **root-level**.
+    ```
+    composer require aklump_drupal/render_patterns:^4.2
+    ```
+---
+### B. Depend on This Module
+
+(_Replace `my_module` below with your module (or theme's) real name._)
+
+* Add the following to _my_module/composer.json_ in the `repositories` array. (_Yes, this is done both here and at the root-level._)
+    ```json
+    {
+     "type": "github",
+     "url": "https://github.com/aklump/drupal_render_patterns"
+    }
+    ```
+* From the depending module (or theme) directory run:
+    ```
+    composer require aklump_drupal/render_patterns:^4.2 --no-update
+    ```
+
+* Add the following to _my_module.info.yml_ in the `dependencies` array:
+    ```yaml
+    aklump_drupal:render_patterns
+    ```
+* Back at the **root-level** run `composer update vendor/my_module`
+
+
+---
+### Enable This Module
+
+* Re-build Drupal caches, if necessary.
+* Enable this module, e.g.,
+  ```shell
+  drush pm-enable render_patterns
+  ```
 
 4. Enable this module.
 5. Begin creating one or more render patterns in _{active theme}/src/RenderPatterns/_.  (You may also provide classes in a module by adjusting the namespace to the module.)

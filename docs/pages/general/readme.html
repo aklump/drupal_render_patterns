@@ -4,11 +4,11 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css">
-      <link rel="stylesheet" href="../../dist/style.css">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
-    <title>Drupal Module: Render Patterns | Render Patterns Drupal Module</title>
-</head>
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=4.2.1">
+      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=4.2.1">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=4.2.1">
+        <title>Drupal Module: Render Patterns | Render Patterns Drupal Module</title>
+  </head>
 <body class="my-5">
 
 <header class="header bg-light fixed-top p-2 pt-1">
@@ -46,27 +46,59 @@
 <h2>Summary</h2>
 <p>The <em>Render Patterns</em> module allows you to encapsulate Drupal render arrays as PHP classes, for repeat use. You expose only the dynamic elements of your render array as class properties, and the rest of the render array is hidden within the black box of the render pattern class. This type of design makes sense if you need to reference the same render array in more than one place as it avoids errors caused by code duplication. It comes from the <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself">DRY principle</a>.</p>
 <p>You may also visit the <a href="http://www.drupal.org/project/render_patterns">project page</a> on Drupal.org.</p>
-<h2>Install with Composer1. Because this is an unpublished package, you must define it's repository in</h2>
-<p>   your project's <em>composer.json</em> file. Add the following to <em>composer.json</em> in
-   the <code>repositories</code> array:</p>
-<pre><code>```json
-{
-    "type": "github",
-    "url": "https://github.com/aklump/drupal_render_patterns"
-}
-```
+<h2>Install with Composer</h2>
+<p>Because this is an unpublished, custom Drupal module, the way you install and depend on it is a little different than published, contributed modules.</p>
+<ul>
+<li>Add the following to the <strong>root-level</strong> <em>composer.json</em> in the <code>repositories</code> array:<pre><code class="json">  {
+   "type": "github",
+   "url": "https://github.com/aklump/drupal_render_patterns"
+  }
 </code></pre>
+</li>
+<li><p>Add the installed directory to <strong>root-level</strong> <em>.gitignore</em></p>
+<pre><code class="php"> /web/modules/custom/render_patterns/
+</code></pre>
+</li>
+<li>Proceed to either A or B, but not both.</li>
+</ul>
+<hr />
+<h3>A. Install Standalone</h3>
+<ul>
+<li>Require _render<em>patterns</em> at the <strong>root-level</strong>.<pre><code>  composer require aklump_drupal/render_patterns:^4.2
+</code></pre>
+</li>
+</ul>
+<hr />
+<h3>B. Depend on This Module</h3>
+<p>(_Replace <code>my_module</code> below with your module (or theme's) real name._)</p>
+<ul>
+<li>Add the following to _my<em>module/composer.json</em> in the <code>repositories</code> array. (<em>Yes, this is done both here and at the root-level.</em>)<pre><code class="json">  {
+   "type": "github",
+   "url": "https://github.com/aklump/drupal_render_patterns"
+  }
+</code></pre>
+</li>
+<li><p>From the depending module (or theme) directory run:
+  <code>  composer require aklump_drupal/render_patterns:^4.2 --no-update
+ </code></p>
+</li>
+<li><p>Add the following to _my<em>module.info.yml</em> in the <code>dependencies</code> array:
+  <code>`</code>yaml
+  aklump_drupal:render_patterns
+  <code>`</code></p>
+</li>
+<li>Back at the <strong>root-level</strong> run <code>composer update vendor/my_module</code></li>
+</ul>
+<hr />
+<h3>Enable This Module</h3>
+<ul>
+<li>Re-build Drupal caches, if necessary.</li>
+<li>Enable this module, e.g.,<pre><code class="shell">drush pm-enable render_patterns
+</code></pre>
+</li>
+</ul>
 <ol>
-<li><p>Require this package:</p>
-<pre><code> composer require aklump_drupal/render_patterns:^4.2
-</code></pre>
-</li>
-<li><p>Add the installed directory to <em>.gitignore</em></p>
-<pre><code class="php">/web/modules/custom/render_patterns/
-</code></pre>
-</li>
-<li><p>Enable this module.</p>
-</li>
+<li>Enable this module.</li>
 <li>Begin creating one or more render patterns in <em>{active theme}/src/RenderPatterns/</em>.  (You may also provide classes in a module by adjusting the namespace to the module.)</li>
 <li>Use namespace <code>\Drupal\my_theme\src\RenderPatterns</code> for the classes.</li>
 </ol>
@@ -171,10 +203,10 @@ modifications for compatibility with Drupal.</p>
   <footer class="footer d-flex justify-content-center">
     <div class="flex-column justify-content-center">
               Version:
-        <strong>4.2.0</strong>
+        <strong>4.2.1</strong>
         &bull;
-            Last Update: <strong>6/13/2024</strong>
-    </div>
+                    Last Update: <strong>8/7/2026</strong>
+          </div>
   </footer>
 
 
@@ -306,9 +338,9 @@ modifications for compatibility with Drupal.</p>
   </div>
 </div>
 
-  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-  <script src="../../dist/lunr.js"></script>
-  <script src="../../dist/knowledge.min.js"></script>
+  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=4.2.1"></script>
+  <script src="../../dist/lunr.js?ver=4.2.1"></script>
+  <script src="../../dist/knowledge.min.js?ver=4.2.1"></script>
 
 </body>
 </html>
