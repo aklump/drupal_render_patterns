@@ -17,7 +17,7 @@ class PatternException extends \Exception {
    * @param \Exception $exception
    *   The exception that was thrown.
    */
-  public function __construct($pattern_class, string $message, \Exception $exception = NULL) {
+  public function __construct($pattern_class, string $message, ?\Exception $exception = NULL) {
     $code = isset($exception) ? $exception->getCode() : NULL;
     parent::__construct("$pattern_class: " . $message, $code, $exception);
   }
